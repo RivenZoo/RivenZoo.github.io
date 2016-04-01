@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Riven的博客</title>
+  <subtitle>Look Inside Deeply</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2016-04-01T02:13:43.000Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>RivenZoo</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hello World</title>
+    <link href="http://yoursite.com/2016/04/01/hello-world/"/>
+    <id>http://yoursite.com/2016/04/01/hello-world/</id>
+    <published>2016-04-01T02:13:43.000Z</published>
+    <updated>2016-04-01T02:13:43.000Z</updated>
+    
+    <content type="html">&lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.io/docs/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;documentation&lt;/a&gt; for more info. If you get any problems when using Hexo, you can find the answer in &lt;a href=&quot;https://hexo.io/docs/troubleshooting.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;troubleshooting&lt;/a&gt; or you can ask me on &lt;a href=&quot;https://github.com/hexojs/hexo/issues&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&quot;Quick-Start&quot;&gt;&lt;a href=&quot;#Quick-Start&quot; class=&quot;headerlink&quot; title=&quot;Quick Start&quot;&gt;&lt;/a&gt;Quick Start&lt;/h2&gt;&lt;h3 id=&quot;Create-a-new-post&quot;&gt;&lt;a href=&quot;#Create-a-new-post&quot; class=&quot;headerlink&quot; title=&quot;Create a new post&quot;&gt;&lt;/a&gt;Create a new post&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ hexo new &lt;span class=&quot;string&quot;&gt;&quot;My New Post&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;More info: &lt;a href=&quot;https://hexo.io/docs/writing.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Writing&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Run-server&quot;&gt;&lt;a href=&quot;#Run-server&quot; class=&quot;headerlink&quot; title=&quot;Run server&quot;&gt;&lt;/a&gt;Run server&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ hexo server&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;More info: &lt;a href=&quot;https://hexo.io/docs/server.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Server&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Generate-static-files&quot;&gt;&lt;a href=&quot;#Generate-static-files&quot; class=&quot;headerlink&quot; title=&quot;Generate static files&quot;&gt;&lt;/a&gt;Generate static files&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ hexo generate&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;More info: &lt;a href=&quot;https://hexo.io/docs/generating.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Generating&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Deploy-to-remote-sites&quot;&gt;&lt;a href=&quot;#Deploy-to-remote-sites&quot; class=&quot;headerlink&quot; title=&quot;Deploy to remote sites&quot;&gt;&lt;/a&gt;Deploy to remote sites&lt;/h3&gt;&lt;figure class=&quot;highlight bash&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;$ hexo deploy&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;More info: &lt;a href=&quot;https://hexo.io/docs/deployment.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Deployment&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
+    
+    </summary>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Go Notes</title>
+    <link href="http://yoursite.com/2015/09/19/go-notes/"/>
+    <id>http://yoursite.com/2015/09/19/go-notes/</id>
+    <published>2015-09-18T17:07:10.000Z</published>
+    <updated>2016-04-01T10:35:52.000Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;Test&quot;&gt;&lt;a href=&quot;#Test&quot; class=&quot;headerlink&quot; title=&quot;Test&quot;&gt;&lt;/a&gt;Test&lt;/h3&gt;&lt;p&gt;   &lt;code&gt;go test -v -run=[pattern]&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Benchmark&quot;&gt;&lt;a href=&quot;#Benchmark&quot; class=&quot;headerlink&quot; title=&quot;Benchmark&quot;&gt;&lt;/a&gt;Benchmark&lt;/h3&gt;&lt;p&gt;   &lt;code&gt;go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t]&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Analysis&quot;&gt;&lt;a href=&quot;#Analysis&quot; class=&quot;headerlink&quot; title=&quot;Analysis&quot;&gt;&lt;/a&gt;Analysis&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;race:&lt;/p&gt;
+&lt;p&gt;  &lt;code&gt;go test -v -run=[pattern] -race&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;cpu:&lt;/p&gt;
+&lt;p&gt;  &lt;code&gt;go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t] -cpuprofile=[output]&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;mem:&lt;/p&gt;
+&lt;p&gt;  &lt;code&gt;go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t] -memprofile=[output]&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;block:&lt;/p&gt;
+&lt;p&gt;  &lt;code&gt;go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t] -blockprofile=[output]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;  &lt;code&gt;go tool pprof [program].test [output]&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;GODEBUG&quot;&gt;&lt;a href=&quot;#GODEBUG&quot; class=&quot;headerlink&quot; title=&quot;GODEBUG&quot;&gt;&lt;/a&gt;GODEBUG&lt;/h3&gt;&lt;p&gt;   runtime提供了环境变量来控制程序。GODEBUG是其中一，它可以设置很多值，格式&lt;code&gt;name=value,name=val&lt;/code&gt;，如开启gctrace：&lt;code&gt;$ GODEBUG=&amp;#39;gctrace=1&amp;#39; your_program&lt;/code&gt;，会在标准错误输出gc信息。&lt;/p&gt;
+&lt;h3 id=&quot;JSON&quot;&gt;&lt;a href=&quot;#JSON&quot; class=&quot;headerlink&quot; title=&quot;JSON&quot;&gt;&lt;/a&gt;JSON&lt;/h3&gt;&lt;p&gt;   推荐使用&lt;a href=&quot;https://github.com/pquerna/ffjson&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;ffjson&lt;/a&gt;&lt;br&gt;   用它替换标准库后，编解码效率提高2倍。对于一些需要编码的大对象，可以采用sync.Pool缓存一定大小的bytes.Buffer，然后直接写buffer来完成json编码，性能有一定提高，在我笔记本上测10*1024的字符串数组，大概比标准json快20%，结果受到分配buffer大小的影响。在对json对象编码的时候，如果有字符串字段，并且字符串可能出现json格式用到的字符，最好预先对字符串编码，否则json编码的时候处理字符串转义会导致性能下降，如果字符串很长，可能会成为瓶颈。&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Test&quot;&gt;&lt;a href=&quot;#Test&quot; class=&quot;headerlink&quot; title=&quot;Test&quot;&gt;&lt;/a&gt;Test&lt;/h3&gt;&lt;p&gt;   &lt;code&gt;go test -v -run=[pattern]&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;Benchmar
+    
+    </summary>
+    
+      <category term="编程语言" scheme="http://yoursite.com/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
+    
+    
+      <category term="Go" scheme="http://yoursite.com/tags/Go/"/>
+    
+  </entry>
+  
+</feed>
