@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://rivenzoo.github.io/"/>
-  <updated>2016-04-15T15:22:18.000Z</updated>
+  <updated>2016-04-17T08:07:56.000Z</updated>
   <id>http://rivenzoo.github.io/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="http://rivenzoo.github.io/2016/04/15/go-rsa-notes/"/>
     <id>http://rivenzoo.github.io/2016/04/15/go-rsa-notes/</id>
     <published>2016-04-15T15:05:18.000Z</published>
-    <updated>2016-04-15T15:22:18.000Z</updated>
+    <updated>2016-04-17T08:07:56.000Z</updated>
     
-    <content type="html">&lt;h4 id=&quot;一次使用rsa的经历&quot;&gt;&lt;a href=&quot;#一次使用rsa的经历&quot; class=&quot;headerlink&quot; title=&quot;一次使用rsa的经历&quot;&gt;&lt;/a&gt;一次使用rsa的经历&lt;/h4&gt;&lt;p&gt;   最近项目中要提供一个接口供客户端查询信息。逻辑简单主要考虑安全性问题，信息保密要求不高但是要保证是服务端返回的，也就是要防止数据被篡改和替换。&lt;/p&gt;
+    <content type="html">&lt;h3 id=&quot;一次使用rsa的经历&quot;&gt;&lt;a href=&quot;#一次使用rsa的经历&quot; class=&quot;headerlink&quot; title=&quot;一次使用rsa的经历&quot;&gt;&lt;/a&gt;一次使用rsa的经历&lt;/h3&gt;&lt;p&gt;   最近项目中要提供一个接口供客户端查询信息。逻辑简单主要考虑安全性问题，信息保密要求不高但是要保证是服务端返回的，也就是要防止数据被篡改和替换。&lt;/p&gt;
 &lt;p&gt;   因为只有一个这样的接口，而且申请证书比较麻烦就不考虑https了。客户端的安全性不是很可靠，如果用AES这样的对称加密，密钥放客户端会有较大风险。考虑用rsa加密来达到目的。&lt;/p&gt;
 &lt;p&gt;   初步想法是服务端保存rsa私钥，用来加密数据，客户端保存公钥，解密服务端返回的数据，这样客户端只能解服务端返回的数据，而且是密文传输。想法很简单，实现起来就遇到了问题。Go语言的rsa包提供的解密方法只能使用公钥加密。&lt;/p&gt;
 &lt;p&gt;   函数原型&lt;br&gt;    &lt;code&gt;func EncryptOAEP(hash hash.Hash, random io.Reader, pub *PublicKey, msg []byte, label []byte) (out []byte, err error)&lt;/code&gt;&lt;/p&gt;
@@ -30,7 +30,7 @@
 &lt;p&gt;   在这个场景中，签名可以达到要求，用私钥对关键信息签名，客户端用公钥校验，可以保证接受正确的服务端信息，唯一不太好的是明文传输的，需要引入一个对称加密对消息加密。&lt;/p&gt;
 &lt;p&gt;   要引入对称加密，可以由客户端随机生成key，用这个key对称加密带校验信息的数据，然后用公钥加密key，这样只有服务端能解出key。然后服务端把客户端带上来的校验信息和数据打包，使用这个key进行对称加密再返回，客户端用自己生成的key解密并校验数据。这样一个流程能保证接受正确的服务端信息，同时是密文传输。&lt;/p&gt;
 &lt;p&gt;   公钥是放在客户端的，假如被其他人拿到，破解了查询协议，最多只能查到数据。要伪造数据去欺骗其他客户端，必须同时知道其他客户端生成的key和校验信息，才能用伪造的请求的结果去欺骗这个客户端。若是AES的key泄漏，不但能查到数据，还能构造其他客户端的查询结果。&lt;/p&gt;
-&lt;h4 id=&quot;rsa使用笔记&quot;&gt;&lt;a href=&quot;#rsa使用笔记&quot; class=&quot;headerlink&quot; title=&quot;rsa使用笔记&quot;&gt;&lt;/a&gt;rsa使用笔记&lt;/h4&gt;&lt;p&gt;   在跟客户端对接的过程中由于对rsa不是很熟悉，遇到了一些问题。&lt;/p&gt;
+&lt;h3 id=&quot;rsa使用笔记&quot;&gt;&lt;a href=&quot;#rsa使用笔记&quot; class=&quot;headerlink&quot; title=&quot;rsa使用笔记&quot;&gt;&lt;/a&gt;rsa使用笔记&lt;/h3&gt;&lt;p&gt;   在跟客户端对接的过程中由于对rsa不是很熟悉，遇到了一些问题。&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;p&gt;padding模式&lt;br&gt;  rsa遵循公钥加密标准(Public Key Cryptography Standards, PKCS)，老的是1.x，一般用1.5，新的是2。对应的padding模式有三种：PKCS1V15对应v1.5，OAEP对应v2，Nopadding。Go的rsa库有前面两种，推荐使用OAEP。&lt;/p&gt;
 &lt;/li&gt;
@@ -39,13 +39,26 @@
 &lt;li&gt;&lt;p&gt;消息长度&lt;br&gt;  每次加解密的消息长度有限制。对于v1.5，最大长度为&lt;code&gt;keyBytes-11&lt;/code&gt;，&lt;code&gt;keyBytes&lt;/code&gt;是私钥字节数，比如2048位的私钥就是256字节。对于v2，最大长度为&lt;code&gt;keyBytes-(hashSize*2+2)&lt;/code&gt;，根据hash函数不同长度不同，比如sha1计算结果20字节，对于2048位的key最大长度&lt;code&gt;256-(20*2+2)&lt;/code&gt;。&lt;br&gt;  如果原文超过了这个一般就分块进行加密。&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;h4 id=&quot;rsa简单封装&quot;&gt;&lt;a href=&quot;#rsa简单封装&quot; class=&quot;headerlink&quot; title=&quot;rsa简单封装&quot;&gt;&lt;/a&gt;rsa简单封装&lt;/h4&gt;&lt;p&gt;   为了方便使用做了个简单封装，放在Github上。&lt;/p&gt;
+&lt;h3 id=&quot;rsa简介&quot;&gt;&lt;a href=&quot;#rsa简介&quot; class=&quot;headerlink&quot; title=&quot;rsa简介&quot;&gt;&lt;/a&gt;rsa简介&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;选择质数&lt;code&gt;p&lt;/code&gt;和&lt;code&gt;q&lt;/code&gt;，计算&lt;code&gt;n=p*q&lt;/code&gt;，欧拉函数&lt;code&gt;φ(n)=(p-1)*(q-1)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;随机选择一个整数&lt;code&gt;e&lt;/code&gt;，条件是&lt;code&gt;1&amp;lt; e &amp;lt; φ(n)&lt;/code&gt;，且&lt;code&gt;e&lt;/code&gt;与&lt;code&gt;φ(n)&lt;/code&gt;互质，计算模反元素&lt;code&gt;d&lt;/code&gt;，即&lt;code&gt;(e*d)mod(φ(n))=1&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;经过上面两步得到&lt;code&gt;p、q、n、e、d&lt;/code&gt;五个数，把&lt;code&gt;n、e&lt;/code&gt;作为公钥，&lt;code&gt;n、d&lt;/code&gt;作为私钥进行加解密。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;加密：消息&lt;code&gt;m&lt;/code&gt;，&lt;code&gt;m&amp;lt;n&lt;/code&gt;，计算&lt;code&gt;(pow(m,e))mod(n)=c&lt;/code&gt;，&lt;code&gt;c&lt;/code&gt;就是&lt;code&gt;m&lt;/code&gt;的密文&lt;/li&gt;
+&lt;li&gt;解密：密文&lt;code&gt;c&lt;/code&gt;，计算&lt;code&gt;(pow(c,d)mod(n))=m&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;对于&lt;code&gt;m&amp;gt;=n&lt;/code&gt;，可以分块加密或者使用对称加密&lt;code&gt;m&lt;/code&gt;然后公钥加密对称加密密钥&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;算法的安全性保证在于很难从&lt;code&gt;n&lt;/code&gt;和&lt;code&gt;e&lt;/code&gt;推断出&lt;code&gt;d&lt;/code&gt;，计算&lt;code&gt;d&lt;/code&gt;需要知道&lt;code&gt;φ(n)&lt;/code&gt;，而当&lt;code&gt;n&lt;/code&gt;值很大的时候，直接计算&lt;code&gt;φ(n)&lt;/code&gt;很困难，分解&lt;code&gt;n&lt;/code&gt;得到&lt;code&gt;p、q&lt;/code&gt;也很困难。&lt;/p&gt;
+&lt;p&gt;rsa原理的介绍推荐阮一峰老师的&lt;a href=&quot;http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;文章&lt;/a&gt;。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;Go语言rsa简单封装&quot;&gt;&lt;a href=&quot;#Go语言rsa简单封装&quot; class=&quot;headerlink&quot; title=&quot;Go语言rsa简单封装&quot;&gt;&lt;/a&gt;Go语言rsa简单封装&lt;/h3&gt;&lt;p&gt;   为了方便使用做了个简单封装，放在Github上。&lt;/p&gt;
 &lt;p&gt;   安装方法&lt;br&gt;    &lt;code&gt;go get github.com/RivenZoo/goutil/dencrypt&lt;/code&gt;&lt;/p&gt;
 </content>
     
     <summary type="html">
     
-      &lt;h4 id=&quot;一次使用rsa的经历&quot;&gt;&lt;a href=&quot;#一次使用rsa的经历&quot; class=&quot;headerlink&quot; title=&quot;一次使用rsa的经历&quot;&gt;&lt;/a&gt;一次使用rsa的经历&lt;/h4&gt;&lt;p&gt;   最近项目中要提供一个接口供客户端查询信息。逻辑简单主要考虑安全性问题，
+      &lt;h3 id=&quot;一次使用rsa的经历&quot;&gt;&lt;a href=&quot;#一次使用rsa的经历&quot; class=&quot;headerlink&quot; title=&quot;一次使用rsa的经历&quot;&gt;&lt;/a&gt;一次使用rsa的经历&lt;/h3&gt;&lt;p&gt;   最近项目中要提供一个接口供客户端查询信息。逻辑简单主要考虑安全性问题，
     
     </summary>
     
