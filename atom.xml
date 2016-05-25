@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://rivenzoo.github.io/"/>
-  <updated>2016-05-24T15:29:42.000Z</updated>
+  <updated>2016-05-25T01:40:27.000Z</updated>
   <id>http://rivenzoo.github.io/</id>
   
   <author>
@@ -20,10 +20,10 @@
     <link href="http://rivenzoo.github.io/2016/05/24/ssh-settings/"/>
     <id>http://rivenzoo.github.io/2016/05/24/ssh-settings/</id>
     <published>2016-05-24T14:58:05.000Z</published>
-    <updated>2016-05-24T15:29:42.000Z</updated>
+    <updated>2016-05-25T01:40:27.000Z</updated>
     
     <content type="html">&lt;h4 id=&quot;记一下平时用到的有用的ssh设置和命令&quot;&gt;&lt;a href=&quot;#记一下平时用到的有用的ssh设置和命令&quot; class=&quot;headerlink&quot; title=&quot;记一下平时用到的有用的ssh设置和命令&quot;&gt;&lt;/a&gt;记一下平时用到的有用的ssh设置和命令&lt;/h4&gt;&lt;ol&gt;
-&lt;li&gt;&lt;p&gt;设置防止自动断开&lt;br&gt;&lt;code&gt;ssh zhuruiwen@op.kisops.com -o ServerAliveInterval=30&lt;/code&gt;&lt;br&gt;&lt;code&gt;-o&lt;/code&gt;可以设置很多选项，&lt;code&gt;ServerAliveInterval&lt;/code&gt;设置隔多少秒没收到数据之后，给对方发送消息请求响应，防止连接被中断&lt;/p&gt;
+&lt;li&gt;&lt;p&gt;设置防止自动断开&lt;br&gt;&lt;code&gt;ssh user@host -o ServerAliveInterval=30&lt;/code&gt;&lt;br&gt;&lt;code&gt;-o&lt;/code&gt;可以设置很多选项，&lt;code&gt;ServerAliveInterval&lt;/code&gt;设置隔多少秒没收到数据之后，给对方发送消息请求响应，防止连接被中断&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p&gt;公钥验证免密码登陆&lt;br&gt;服务端设置: 修改&lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt;，设置&lt;code&gt;RSAAuthentication yes&lt;/code&gt;，重启ssh服务&lt;br&gt;本机: 生成公钥&lt;code&gt;$ ssh-keygen&lt;/code&gt;，上传公钥&lt;code&gt;$ ssh user@host &amp;#39;mkdir -p .ssh &amp;amp;&amp;amp; cat &amp;gt;&amp;gt; .ssh/authorized_keys&amp;#39; &amp;lt; ~/.ssh/id_rsa.pub&lt;/code&gt;&lt;/p&gt;
 &lt;/li&gt;

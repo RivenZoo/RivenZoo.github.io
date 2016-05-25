@@ -7,7 +7,7 @@
       <title><![CDATA[ssh-settings]]></title>
       <url>http://rivenzoo.github.io/2016/05/24/ssh-settings/</url>
       <content type="html"><![CDATA[<h4 id="记一下平时用到的有用的ssh设置和命令"><a href="#记一下平时用到的有用的ssh设置和命令" class="headerlink" title="记一下平时用到的有用的ssh设置和命令"></a>记一下平时用到的有用的ssh设置和命令</h4><ol>
-<li><p>设置防止自动断开<br><code>ssh zhuruiwen@op.kisops.com -o ServerAliveInterval=30</code><br><code>-o</code>可以设置很多选项，<code>ServerAliveInterval</code>设置隔多少秒没收到数据之后，给对方发送消息请求响应，防止连接被中断</p>
+<li><p>设置防止自动断开<br><code>ssh user@host -o ServerAliveInterval=30</code><br><code>-o</code>可以设置很多选项，<code>ServerAliveInterval</code>设置隔多少秒没收到数据之后，给对方发送消息请求响应，防止连接被中断</p>
 </li>
 <li><p>公钥验证免密码登陆<br>服务端设置: 修改<code>/etc/ssh/sshd_config</code>，设置<code>RSAAuthentication yes</code>，重启ssh服务<br>本机: 生成公钥<code>$ ssh-keygen</code>，上传公钥<code>$ ssh user@host &#39;mkdir -p .ssh &amp;&amp; cat &gt;&gt; .ssh/authorized_keys&#39; &lt; ~/.ssh/id_rsa.pub</code></p>
 </li>
