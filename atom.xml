@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://rivenzoo.github.io/"/>
-  <updated>2016-06-13T15:41:44.000Z</updated>
+  <updated>2016-09-24T07:24:05.000Z</updated>
   <id>http://rivenzoo.github.io/</id>
   
   <author>
@@ -14,6 +14,97 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>go-code-style-guide</title>
+    <link href="http://rivenzoo.github.io/2016/09/24/go-code-style-guide/"/>
+    <id>http://rivenzoo.github.io/2016/09/24/go-code-style-guide/</id>
+    <published>2016-09-24T07:18:47.000Z</published>
+    <updated>2016-09-24T07:24:05.000Z</updated>
+    
+    <content type="html">&lt;h1 id=&quot;Go-Code-Style-Guide&quot;&gt;&lt;a href=&quot;#Go-Code-Style-Guide&quot; class=&quot;headerlink&quot; title=&quot;Go Code Style Guide&quot;&gt;&lt;/a&gt;Go Code Style Guide&lt;/h1&gt;&lt;p&gt;参考 &lt;a href=&quot;https://github.com/golang/go/wiki/CodeReviewComments&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Golang CodeReviewComments&lt;/a&gt; 整理而成。每条最后有&lt;code&gt;[require]&lt;/code&gt;的表示要求遵守。&lt;/p&gt;
+&lt;h3 id=&quot;Style-Guide&quot;&gt;&lt;a href=&quot;#Style-Guide&quot; class=&quot;headerlink&quot; title=&quot;Style Guide&quot;&gt;&lt;/a&gt;Style Guide&lt;/h3&gt;&lt;h4 id=&quot;工具&quot;&gt;&lt;a href=&quot;#工具&quot; class=&quot;headerlink&quot; title=&quot;工具&quot;&gt;&lt;/a&gt;工具&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;go vet 静态检查命令，修复错误提示。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;go vet pkg|file&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;goimports 代码格式化工具，功能比gofmt更多，代码提交前使用。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;goimports -w file&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;golint 代码风格检查工具，建议按提示修改代码风格。&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;golint pkg|file&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;命名&quot;&gt;&lt;a href=&quot;#命名&quot; class=&quot;headerlink&quot; title=&quot;命名&quot;&gt;&lt;/a&gt;命名&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;命名使用单词首字母大写的规则，不要使用下划线连接单词。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;注释&quot;&gt;&lt;a href=&quot;#注释&quot; class=&quot;headerlink&quot; title=&quot;注释&quot;&gt;&lt;/a&gt;注释&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;注释文档应该是完整的句子，以描述性名词开始，句号结尾。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+ &lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;// A Request represents a request to run a command.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;type &lt;span class=&quot;type&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;/span&gt;&amp;#123; ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;// Encode writes the JSON encoding of req to w.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Encode&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(w io.Writer, req *Request)&lt;/span&gt;&lt;/span&gt; &amp;#123; ...&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;包和可导出的方法要有注释文档，注释文档和包声明、方法之间不要有空格。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;Error&quot;&gt;&lt;a href=&quot;#Error&quot; class=&quot;headerlink&quot; title=&quot;Error&quot;&gt;&lt;/a&gt;Error&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;用返回error代替panic，只在程序逻辑无法继续的情况下使用panic。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;error字符串不应该首字母大写（除非缩写或专有名词），也不要用标点符号结尾。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;不要用&lt;code&gt;_&lt;/code&gt;丢弃错误。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;import&quot;&gt;&lt;a href=&quot;#import&quot; class=&quot;headerlink&quot; title=&quot;import&quot;&gt;&lt;/a&gt;import&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;import分组，排列顺序为标准库、工程内部包、第三方包。&lt;/li&gt;
+&lt;li&gt;避免&lt;code&gt;import . pkg&lt;/code&gt;，唯一使用的情况是在测试包中。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;变量&quot;&gt;&lt;a href=&quot;#变量&quot; class=&quot;headerlink&quot; title=&quot;变量&quot;&gt;&lt;/a&gt;变量&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;变量名使用的范围小，短名字更好；变量使用范围大，名字的描述性要好；不常用的变量和全局变量名字描述性要好。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;声明空数组用&lt;code&gt;var t []string&lt;/code&gt;而不用 &lt;del&gt;t := []string{}&lt;/del&gt;，前者避免声明时分配内存。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;对于单词缩写，全大写或全小写，不要使用首字母大写。例如使用URL/url而不用&lt;del&gt;Url&lt;/del&gt;，使用appID而不用&lt;del&gt;appId&lt;/del&gt;。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;函数声明&quot;&gt;&lt;a href=&quot;#函数声明&quot; class=&quot;headerlink&quot; title=&quot;函数声明&quot;&gt;&lt;/a&gt;函数声明&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;相同类型返回值使用命名返回值来区分。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+ &lt;figure class=&quot;highlight erlang&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;// Location returns f&#39;s latitude &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; longitude.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;// Negative values mean south &lt;span class=&quot;keyword&quot;&gt;and&lt;/span&gt; west, respectively.&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;title&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;params&quot;&gt;(f *Foo)&lt;/span&gt; L&lt;span class=&quot;title&quot;&gt;ocation&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;params&quot;&gt;(lat, long float64, err error)&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;不要为了防止内存拷贝而传递指针，只有在需要修改对象或者传递大对象时才使用指针参数。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;方法&quot;&gt;&lt;a href=&quot;#方法&quot; class=&quot;headerlink&quot; title=&quot;方法&quot;&gt;&lt;/a&gt;方法&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;方法接受对象的名字不要使用&lt;code&gt;me&lt;/code&gt;/&lt;code&gt;this&lt;/code&gt;/&lt;code&gt;self&lt;/code&gt;之类通用的名字，使用具体描述性单词，短方法可以使用短名字。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果接受对象是map，不要使用指针。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果接受对象是slice，并且不需要重新分配slice大小，不要使用指针。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果接受对象是struct，并且有类似&lt;code&gt;sync.Mutex&lt;/code&gt;用于同步的字段，需要使用指针避免拷贝。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果接受对象是大的struct或者array，需要使用指针避免拷贝。参考函数声明参数类型选择。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果需要修改接受对象，需要使用指针。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果接受对象的任何元素含有可变对象或指针，建议使用指针。&lt;/li&gt;
+&lt;li&gt;如果接受对象是array或struct，元素和字段只包含&lt;code&gt;int&lt;/code&gt;/&lt;code&gt;string&lt;/code&gt;/&lt;code&gt;time.Time&lt;/code&gt;这类不可变类型，建议使用值类型。&lt;/li&gt;
+&lt;li&gt;如果以上情况不适用，则使用指针类型。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;包&quot;&gt;&lt;a href=&quot;#包&quot; class=&quot;headerlink&quot; title=&quot;包&quot;&gt;&lt;/a&gt;包&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;包内部类型或函数命名不要以包名为前缀。&lt;code&gt;[require]&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;程序流程&quot;&gt;&lt;a href=&quot;#程序流程&quot; class=&quot;headerlink&quot; title=&quot;程序流程&quot;&gt;&lt;/a&gt;程序流程&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;及时处理错误。建议使用下面的形式。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+ &lt;figure class=&quot;highlight stata&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;err&lt;/span&gt; != nil &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// error handling&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// or continue, etc.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// normal code&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;x, &lt;span class=&quot;keyword&quot;&gt;err&lt;/span&gt; := &lt;span class=&quot;built_in&quot;&gt;f&lt;/span&gt;()&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;err&lt;/span&gt; != nil &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// error handling&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;built_in&quot;&gt;return&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// use x&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;init&lt;/code&gt;函数内只做一些轻量级初始化工作，避免执行依赖其他资源的代码。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;测试&quot;&gt;&lt;a href=&quot;#测试&quot; class=&quot;headerlink&quot; title=&quot;测试&quot;&gt;&lt;/a&gt;测试&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;测试失败时要描述清楚具体错误、输入输出以及期望的输出。&lt;/p&gt;
+ &lt;figure class=&quot;highlight perl&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; got != tt.want &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    t.Errorf(&lt;span class=&quot;string&quot;&gt;&quot;Foo(%q) = %d; want %d&quot;&lt;/span&gt;, tt.in, got, tt.want) // &lt;span class=&quot;keyword&quot;&gt;or&lt;/span&gt; Fatalf, &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; test can&lt;span class=&quot;string&quot;&gt;&#39;t test anything more past this point&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h1 id=&quot;Go-Code-Style-Guide&quot;&gt;&lt;a href=&quot;#Go-Code-Style-Guide&quot; class=&quot;headerlink&quot; title=&quot;Go Code Style Guide&quot;&gt;&lt;/a&gt;Go Code Style Guide&lt;/h1&gt;&lt;p&gt;参考
+    
+    </summary>
+    
+      <category term="编程语言" scheme="http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
+    
+    
+      <category term="Go" scheme="http://rivenzoo.github.io/tags/Go/"/>
+    
+  </entry>
   
   <entry>
     <title>ssh-settings</title>
@@ -302,10 +393,11 @@ ControlPersist 10m
     <link href="http://rivenzoo.github.io/2015/01/21/c-minint-define/"/>
     <id>http://rivenzoo.github.io/2015/01/21/c-minint-define/</id>
     <published>2015-01-20T16:33:54.000Z</published>
-    <updated>2016-04-01T12:23:44.000Z</updated>
+    <updated>2016-07-18T12:47:53.000Z</updated>
     
     <content type="html">&lt;p&gt;关于c语言INT_MIN定义的问题&lt;/p&gt;
-&lt;p&gt;最近看到一段代码&lt;br&gt;&lt;figure class=&quot;highlight arduino&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#&lt;span class=&quot;meta-keyword&quot;&gt;define&lt;/span&gt; INT_MAX 2147483647&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#&lt;span class=&quot;meta-keyword&quot;&gt;define&lt;/span&gt; INT_MIN (-INT_MAX - 1)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;最近看到一段代码&lt;/p&gt;
+&lt;figure class=&quot;highlight arduino&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#&lt;span class=&quot;meta-keyword&quot;&gt;define&lt;/span&gt; INT_MAX 2147483647&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#&lt;span class=&quot;meta-keyword&quot;&gt;define&lt;/span&gt; INT_MIN (-INT_MAX - 1)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;INT_MIN的值应该为 -2147483648，为什么不直接定义呢？原因参考&lt;a href=&quot;http://www.cnblogs.com/Jack47/archive/2013/01/06/TMin32-in-c.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Jack47的blog:C语言中TMin的写法&lt;/a&gt;这篇文章。&lt;/p&gt;
 &lt;p&gt;个人理解为C语言在处理程序中常量时，符号-和后面的值是分开处理的，先处理字面值，然后将-作为一元运算符。处理字面值的时候会决定这个常量的类型，基本的规则是选能容纳字面值的最小类型。如32位系统，2147483648这个值决定为unsigned int，如果使用&lt;code&gt;#define INT_MIN (-2147483648)&lt;/code&gt;这个定义，INT_MIN类型为unsigned int。&lt;/p&gt;
 &lt;p&gt;写了一段代码验证&lt;/p&gt;
@@ -323,7 +415,8 @@ ControlPersist 10m
     <summary type="html">
     
       &lt;p&gt;关于c语言INT_MIN定义的问题&lt;/p&gt;
-&lt;p&gt;最近看到一段代码&lt;br&gt;&lt;figure class=&quot;highlight arduino&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;
+&lt;p&gt;最近看到一段代码&lt;/p&gt;
+&lt;figure class=&quot;highlight arduino&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br
     
     </summary>
     
@@ -370,7 +463,7 @@ ControlPersist 10m
     <link href="http://rivenzoo.github.io/2013/11/22/about-thread-safe/"/>
     <id>http://rivenzoo.github.io/2013/11/22/about-thread-safe/</id>
     <published>2013-11-21T16:13:44.000Z</published>
-    <updated>2016-04-01T12:21:25.000Z</updated>
+    <updated>2016-09-24T07:19:30.000Z</updated>
     
     <content type="html">&lt;p&gt;在stackoverflow上看的的关于可重入与线程安全的区别：&lt;/p&gt;
 &lt;blockquote&gt;
@@ -404,7 +497,7 @@ ControlPersist 10m
     <link href="http://rivenzoo.github.io/2013/11/05/define-linux-signal/"/>
     <id>http://rivenzoo.github.io/2013/11/05/define-linux-signal/</id>
     <published>2013-11-05T11:55:55.000Z</published>
-    <updated>2016-04-01T12:36:53.000Z</updated>
+    <updated>2016-07-18T12:48:10.000Z</updated>
     
     <content type="html">&lt;p&gt;有时候我们需要在程序中利用信号来控制程序行为，linux为我们提供了2个已经定义的信号SIGUSR1和SIGUSR2，一般的程序利用这2个信号已经能满足需要，不过我最近需要一些其他信号来避免覆盖原来的信号处理函数。 &lt;/p&gt;
 &lt;figure class=&quot;highlight arduino&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;#&lt;span class=&quot;meta-keyword&quot;&gt;define&lt;/span&gt; MYSIG_MSG        (SIGUSR2 + 1)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 定义信号然后注册处理函数&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;

@@ -37,29 +37,8 @@
     </url>
 
     <url>
-        <loc>http://rivenzoo.github.io/tags/Linux/</loc>
-        <lastmod>2016-04-01T12:36:53.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://rivenzoo.github.io/tags/C-C/</loc>
-        <lastmod>2016-04-15T15:24:21.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://rivenzoo.github.io/tags/Makefile/</loc>
         <lastmod>2016-04-15T15:24:21.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
-        <loc>http://rivenzoo.github.io/tags/Go/</loc>
-        <lastmod>2016-04-17T08:07:56.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
@@ -80,7 +59,28 @@
 
     <url>
         <loc>http://rivenzoo.github.io/tags/SSH/</loc>
-        <lastmod>2016-05-25T01:40:27.000Z</lastmod>
+        <lastmod>2016-06-13T15:41:44.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/tags/Linux/</loc>
+        <lastmod>2016-07-18T12:48:10.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/tags/C-C/</loc>
+        <lastmod>2016-09-24T07:19:30.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/tags/Go/</loc>
+        <lastmod>2016-09-24T07:24:05.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>

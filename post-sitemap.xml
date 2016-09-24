@@ -7,8 +7,40 @@
     </url>
 
     <url>
+        <loc>http://rivenzoo.github.io/2016/09/24/go-code-style-guide/</loc>
+        <lastmod>2016-09-24T07:24:05.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/2013/11/22/about-thread-safe/</loc>
+        <lastmod>2016-09-24T07:19:30.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/2013/11/05/define-linux-signal/</loc>
+        <lastmod>2016-07-18T12:48:10.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/2015/01/21/c-minint-define/</loc>
+        <lastmod>2016-07-18T12:47:53.000Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+
+    </url>
+
+    <url>
         <loc>http://rivenzoo.github.io/2016/05/24/ssh-settings/</loc>
-        <lastmod>2016-05-25T01:40:27.000Z</lastmod>
+        <lastmod>2016-06-13T15:41:44.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 
@@ -39,32 +71,8 @@
     </url>
 
     <url>
-        <loc>http://rivenzoo.github.io/2013/11/05/define-linux-signal/</loc>
-        <lastmod>2016-04-01T12:36:53.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
         <loc>http://rivenzoo.github.io/2013/09/01/hello-world/</loc>
         <lastmod>2016-04-01T12:36:03.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://rivenzoo.github.io/2015/01/21/c-minint-define/</loc>
-        <lastmod>2016-04-01T12:23:44.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.6</priority>
-
-    </url>
-
-    <url>
-        <loc>http://rivenzoo.github.io/2013/11/22/about-thread-safe/</loc>
-        <lastmod>2016-04-01T12:21:25.000Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
 

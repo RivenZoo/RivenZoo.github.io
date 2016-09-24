@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Tech,Idea,Funny,Daily"><title>go-code-style-guide | Riven的博客</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/3.0.3/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">go-code-style-guide</h1><a id="logo" href="/.">Riven的博客</a><p class="description">Look Inside Deeply</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h1 class="post-title">go-code-style-guide</h1><div class="post-meta">Sep 24, 2016<span> | </span><span class="category"><a href="/categories/编程语言/">编程语言</a></span><script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js" async></script><span id="busuanzi_container_page_pv"> | <span id="busuanzi_value_page_pv"></span><span> Hits</span></span></div><a data-disqus-identifier="2016/09/24/go-code-style-guide/" href="/2016/09/24/go-code-style-guide/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><h1 id="Go-Code-Style-Guide"><a href="#Go-Code-Style-Guide" class="headerlink" title="Go Code Style Guide"></a>Go Code Style Guide</h1><p>参考 <a href="https://github.com/golang/go/wiki/CodeReviewComments" target="_blank" rel="external">Golang CodeReviewComments</a> 整理而成。每条最后有<code>[require]</code>的表示要求遵守。</p>
+<h3 id="Style-Guide"><a href="#Style-Guide" class="headerlink" title="Style Guide"></a>Style Guide</h3><h4 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h4><ol>
+<li><p>go vet 静态检查命令，修复错误提示。<code>[require]</code></p>
+<p> <code>go vet pkg|file</code></p>
+</li>
+<li><p>goimports 代码格式化工具，功能比gofmt更多，代码提交前使用。<code>[require]</code></p>
+<p> <code>goimports -w file</code></p>
+</li>
+<li><p>golint 代码风格检查工具，建议按提示修改代码风格。</p>
+<p> <code>golint pkg|file</code></p>
+</li>
+</ol>
+<h4 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h4><ol>
+<li>命名使用单词首字母大写的规则，不要使用下划线连接单词。<code>[require]</code></li>
+</ol>
+<h4 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h4><ol>
+<li><p>注释文档应该是完整的句子，以描述性名词开始，句号结尾。<code>[require]</code></p>
+ <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">// A Request represents a request to run a command.</span></span><br><span class="line">type <span class="type">Request</span> <span class="class"><span class="keyword">struct</span> </span>&#123; ...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Encode writes the JSON encoding of req to w.</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(w io.Writer, req *Request)</span></span> &#123; ...</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>包和可导出的方法要有注释文档，注释文档和包声明、方法之间不要有空格。<code>[require]</code></p>
+</li>
+</ol>
+<h4 id="Error"><a href="#Error" class="headerlink" title="Error"></a>Error</h4><ol>
+<li>用返回error代替panic，只在程序逻辑无法继续的情况下使用panic。<code>[require]</code></li>
+<li>error字符串不应该首字母大写（除非缩写或专有名词），也不要用标点符号结尾。<code>[require]</code></li>
+<li>不要用<code>_</code>丢弃错误。</li>
+</ol>
+<h4 id="import"><a href="#import" class="headerlink" title="import"></a>import</h4><ol>
+<li>import分组，排列顺序为标准库、工程内部包、第三方包。</li>
+<li>避免<code>import . pkg</code>，唯一使用的情况是在测试包中。</li>
+</ol>
+<h4 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h4><ol>
+<li>变量名使用的范围小，短名字更好；变量使用范围大，名字的描述性要好；不常用的变量和全局变量名字描述性要好。<code>[require]</code></li>
+<li>声明空数组用<code>var t []string</code>而不用 <del>t := []string{}</del>，前者避免声明时分配内存。<code>[require]</code></li>
+<li>对于单词缩写，全大写或全小写，不要使用首字母大写。例如使用URL/url而不用<del>Url</del>，使用appID而不用<del>appId</del>。<code>[require]</code></li>
+</ol>
+<h4 id="函数声明"><a href="#函数声明" class="headerlink" title="函数声明"></a>函数声明</h4><ol>
+<li><p>相同类型返回值使用命名返回值来区分。<code>[require]</code></p>
+ <figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">// Location returns f's latitude <span class="keyword">and</span> longitude.</span><br><span class="line">// Negative values mean south <span class="keyword">and</span> west, respectively.</span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(f *Foo)</span> L<span class="title">ocation</span><span class="params">()</span> <span class="params">(lat, long float64, err error)</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不要为了防止内存拷贝而传递指针，只有在需要修改对象或者传递大对象时才使用指针参数。<code>[require]</code></p>
+</li>
+</ol>
+<h4 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h4><ol>
+<li>方法接受对象的名字不要使用<code>me</code>/<code>this</code>/<code>self</code>之类通用的名字，使用具体描述性单词，短方法可以使用短名字。<code>[require]</code></li>
+<li>如果接受对象是map，不要使用指针。<code>[require]</code></li>
+<li>如果接受对象是slice，并且不需要重新分配slice大小，不要使用指针。<code>[require]</code></li>
+<li>如果接受对象是struct，并且有类似<code>sync.Mutex</code>用于同步的字段，需要使用指针避免拷贝。<code>[require]</code></li>
+<li>如果接受对象是大的struct或者array，需要使用指针避免拷贝。参考函数声明参数类型选择。<code>[require]</code></li>
+<li>如果需要修改接受对象，需要使用指针。<code>[require]</code></li>
+<li>如果接受对象的任何元素含有可变对象或指针，建议使用指针。</li>
+<li>如果接受对象是array或struct，元素和字段只包含<code>int</code>/<code>string</code>/<code>time.Time</code>这类不可变类型，建议使用值类型。</li>
+<li>如果以上情况不适用，则使用指针类型。</li>
+</ol>
+<h4 id="包"><a href="#包" class="headerlink" title="包"></a>包</h4><ol>
+<li>包内部类型或函数命名不要以包名为前缀。<code>[require]</code></li>
+</ol>
+<h4 id="程序流程"><a href="#程序流程" class="headerlink" title="程序流程"></a>程序流程</h4><ol>
+<li><p>及时处理错误。建议使用下面的形式。<code>[require]</code></p>
+ <figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">err</span> != nil &#123;</span><br><span class="line">    <span class="comment">// error handling</span></span><br><span class="line">    <span class="keyword">return</span> <span class="comment">// or continue, etc.</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// normal code</span></span><br><span class="line"></span><br><span class="line">x, <span class="keyword">err</span> := <span class="built_in">f</span>()</span><br><span class="line"><span class="keyword">if</span> <span class="keyword">err</span> != nil &#123;</span><br><span class="line">    <span class="comment">// error handling</span></span><br><span class="line">    <span class="built_in">return</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// use x</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>init</code>函数内只做一些轻量级初始化工作，避免执行依赖其他资源的代码。<code>[require]</code></p>
+</li>
+</ol>
+<h4 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h4><ol>
+<li><p>测试失败时要描述清楚具体错误、输入输出以及期望的输出。</p>
+ <figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> got != tt.want &#123;</span><br><span class="line">    t.Errorf(<span class="string">"Foo(%q) = %d; want %d"</span>, tt.in, got, tt.want) // <span class="keyword">or</span> Fatalf, <span class="keyword">if</span> test can<span class="string">'t test anything more past this point</span><br><span class="line">&#125;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+</div><script type="text/javascript" src="/js/share.js?v=0.0.0" async></script><a data-url="http://rivenzoo.github.io/2016/09/24/go-code-style-guide/" data-id="citgvavzb00069ekswkn0pldw" class="article-share-link">分享到</a><div class="tags"><a href="/tags/Go/">Go</a></div><div class="post-nav"><a href="/2016/05/24/ssh-settings/" class="next">ssh-settings</a></div><div id="disqus_thread"><script>var disqus_shortname = 'rivenzoo';
+var disqus_identifier = '2016/09/24/go-code-style-guide/';
+var disqus_title = 'go-code-style-guide';
+var disqus_url = 'http://rivenzoo.github.io/2016/09/24/go-code-style-guide/';
+(function() {
+  var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();</script><script id="dsq-count-scr" src="//rivenzoo.disqus.com/count.js" async></script></div></div></div></div><div class="pure-u-1-4"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://rivenzoo.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/消息中间件/">消息中间件</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/NoSQL/">NoSQL</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/安全/">安全</a></li></ul></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Zookeeper/" style="font-size: 15px;">Zookeeper</a> <a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/Go/" style="font-size: 15px;">Go</a> <a href="/tags/Rsa/" style="font-size: 15px;">Rsa</a> <a href="/tags/Makefile/" style="font-size: 15px;">Makefile</a> <a href="/tags/Kafka/" style="font-size: 15px;">Kafka</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/SSH/" style="font-size: 15px;">SSH</a> <a href="/tags/Ubuntu/" style="font-size: 15px;">Ubuntu</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/Leveldb/" style="font-size: 15px;">Leveldb</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2016/09/24/go-code-style-guide/">go-code-style-guide</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/24/ssh-settings/">ssh-settings</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/go-rsa-notes/">Go使用Rsa加解密</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/10/10/ubuntu-mount-ntfs/">Ubuntu Mount NTFS with system boot</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/09/19/go-notes/">Go Notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/04/15/python-brew/">PythonBrew</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/03/08/leveldb-source-1/">Take a look at Level source code</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/03/07/makefile-source-dependency/">Makefile获取依赖的源文件</a></li><li class="post-list-item"><a class="post-list-link" href="/2015/01/21/c-minint-define/">C语言INT_MIN定义的问题</a></li><li class="post-list-item"><a class="post-list-link" href="/2014/09/21/notes-about-kafka/">Notes About Kafka</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-comment-o"> 最近评论</i></div><script type="text/javascript" src="//rivenzoo.disqus.com/recent_comments_widget.js?num_items=5&amp;hide_avatars=1&amp;avatar_size=32&amp;excerpt_length=20&amp;hide_mods=1"></script></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="null" title="null" target="_blank"></a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">Riven的博客.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+ga('create','UA-62916711-3','auto');ga('send','pageview');
+</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
