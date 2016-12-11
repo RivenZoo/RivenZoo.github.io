@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://rivenzoo.github.io/"/>
-  <updated>2016-09-24T07:24:05.000Z</updated>
+  <updated>2016-12-11T16:25:11.000Z</updated>
   <id>http://rivenzoo.github.io/</id>
   
   <author>
@@ -16,11 +16,60 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>vim-shortcut</title>
+    <link href="http://rivenzoo.github.io/2016/12/12/vim-shortcut/"/>
+    <id>http://rivenzoo.github.io/2016/12/12/vim-shortcut/</id>
+    <published>2016-12-12T12:17:08.000Z</published>
+    <updated>2016-12-11T16:25:11.000Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;vim快捷键&quot;&gt;&lt;a href=&quot;#vim快捷键&quot; class=&quot;headerlink&quot; title=&quot;vim快捷键&quot;&gt;&lt;/a&gt;vim快捷键&lt;/h3&gt;&lt;h4 id=&quot;跳转&quot;&gt;&lt;a href=&quot;#跳转&quot; class=&quot;headerlink&quot; title=&quot;跳转&quot;&gt;&lt;/a&gt;跳转&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;行内跳转 &lt;/p&gt;
+&lt;p&gt; &lt;code&gt;^&lt;/code&gt; 行开头&lt;br&gt; &lt;code&gt;$&lt;/code&gt; 行尾&lt;br&gt; &lt;code&gt;w/W&lt;/code&gt; 下一个单词开头&lt;br&gt; &lt;code&gt;e/E&lt;/code&gt; 下一个单词末尾&lt;br&gt; &lt;code&gt;b/B&lt;/code&gt; 上一个单词开头&lt;br&gt; &lt;code&gt;f+{字符}&lt;/code&gt; 下一个字符本身 &lt;code&gt;F+{字符}&lt;/code&gt; 上一个字符本身&lt;br&gt; &lt;code&gt;t+{字符}&lt;/code&gt; 下一个字符之后 &lt;code&gt;T+{字符}&lt;/code&gt; 上一个字符之后&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;跨行跳转&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;h&lt;/code&gt; 左 &lt;code&gt;j&lt;/code&gt; 下 &lt;code&gt;k&lt;/code&gt; 上 &lt;code&gt;l&lt;/code&gt; 右&lt;br&gt; &lt;code&gt;{数字}+h/j/k/l&lt;/code&gt; 跳转n个位置&lt;br&gt; &lt;code&gt;{数字}+G&lt;/code&gt; 跳转到第n行&lt;br&gt; &lt;code&gt;*&lt;/code&gt; 向下搜索光标对应单词&lt;br&gt; &lt;code&gt;#&lt;/code&gt; 向上搜索光标对应单词&lt;br&gt; &lt;code&gt;gg&lt;/code&gt; 文件开头&lt;br&gt; &lt;code&gt;G&lt;/code&gt; 文件末尾&lt;br&gt; &lt;code&gt;ctrl+b&lt;/code&gt; 向上翻页&lt;br&gt; &lt;code&gt;ctrl+f&lt;/code&gt; 向下翻页&lt;br&gt; &lt;code&gt;ctrl+u&lt;/code&gt; 向上翻半页&lt;br&gt; &lt;code&gt;ctrl+d&lt;/code&gt; 向下翻半页&lt;br&gt; &lt;code&gt;ctrl+o&lt;/code&gt; 跳转到光标上一个位置&lt;br&gt; &lt;code&gt;ctrl+i&lt;/code&gt; 跳转到光标下一个位置&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;编辑&quot;&gt;&lt;a href=&quot;#编辑&quot; class=&quot;headerlink&quot; title=&quot;编辑&quot;&gt;&lt;/a&gt;编辑&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;行内编辑&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;x&lt;/code&gt; 删除一个字符&lt;br&gt; &lt;code&gt;{数字}+x&lt;/code&gt; 删除n个字符&lt;br&gt; &lt;code&gt;dd&lt;/code&gt; 删除一行，包括换行&lt;br&gt; &lt;code&gt;d+{数字}+d&lt;/code&gt; / &lt;code&gt;{数字}+dd&lt;/code&gt; 删除n行&lt;br&gt; &lt;code&gt;d+w/W&lt;/code&gt; / &lt;code&gt;d+e/E&lt;/code&gt; 向后删除一个单词&lt;br&gt; &lt;code&gt;d+b/B&lt;/code&gt; 向前删除一个单词&lt;br&gt; &lt;code&gt;D&lt;/code&gt; / &lt;code&gt;d+$&lt;/code&gt; 删除光标之后所有字符，不包括换行&lt;br&gt; &lt;code&gt;i&lt;/code&gt; 光标之前插入&lt;br&gt; &lt;code&gt;a&lt;/code&gt; 光标之后插入&lt;br&gt; &lt;code&gt;r&lt;/code&gt; 替换光标处字符&lt;br&gt; &lt;code&gt;{数字}+r&lt;/code&gt;    替换光标开始n个字符&lt;br&gt; &lt;code&gt;o&lt;/code&gt; 插入下一行，光标跳转到新行&lt;br&gt; &lt;code&gt;O&lt;/code&gt; 插入上一行，光标跳转到新行&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;复制粘贴&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;yy&lt;/code&gt; 复制一行&lt;br&gt; &lt;code&gt;{数字}+yy&lt;/code&gt; / &lt;code&gt;y+{数字}+y&lt;/code&gt; 复制n行&lt;br&gt; &lt;code&gt;y+{位置}+y&lt;/code&gt; 复制光标与某一行直接的内容&lt;br&gt; &lt;code&gt;y+w/W&lt;/code&gt; / &lt;code&gt;y+e/E&lt;/code&gt; 向后复制一个单词&lt;br&gt; &lt;code&gt;y+b/B&lt;/code&gt; 向前复制一个单词&lt;br&gt; &lt;code&gt;p&lt;/code&gt; 在光标后粘贴&lt;br&gt; &lt;code&gt;P&lt;/code&gt; 在光标前粘贴&lt;br&gt; &lt;code&gt;{数字}+p&lt;/code&gt; 多次粘贴&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&quot;寄存器&quot;&gt;&lt;a href=&quot;#寄存器&quot; class=&quot;headerlink&quot; title=&quot;寄存器&quot;&gt;&lt;/a&gt;寄存器&lt;/h4&gt;&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;常规模式&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;:h registers&lt;/code&gt; 查看man page&lt;br&gt; &lt;code&gt;&amp;quot;+{寄存器名}&lt;/code&gt; 引用一个寄存器&lt;br&gt; &lt;code&gt;&amp;quot;&amp;quot;&lt;/code&gt; 未命名寄存器，复制或删除都会替换它的内容&lt;br&gt; &lt;code&gt;&amp;quot;0~&amp;quot;9&lt;/code&gt; &lt;code&gt;&amp;quot;0&lt;/code&gt; 保存最后一次复制内容 &lt;code&gt;&amp;quot;1&lt;/code&gt;~&lt;code&gt;&amp;quot;9&lt;/code&gt; 保存最后删除的内容，&lt;code&gt;&amp;quot;1&lt;/code&gt;为最近删除&lt;br&gt; &lt;code&gt;&amp;quot;+{寄存器名}+y&lt;/code&gt; 复制到指定寄存器&lt;br&gt; &lt;code&gt;&amp;quot;+{寄存器名}+p&lt;/code&gt; 粘贴指定寄存器内容&lt;br&gt; &lt;code&gt;:reg {寄存器名}&lt;/code&gt; 查看寄存器内容&lt;br&gt; &lt;code&gt;&amp;quot;.&lt;/code&gt; &lt;code&gt;&amp;quot;%&lt;/code&gt; &lt;code&gt;&amp;quot;:&lt;/code&gt; &lt;code&gt;&amp;quot;#&lt;/code&gt; 只读寄存器&lt;br&gt; &amp;gt;&lt;br&gt; &lt;code&gt;&amp;quot;.&lt;/code&gt;存最后插入的内容；&lt;code&gt;&amp;quot;%&lt;/code&gt;存当前文件相对于vim打开时的路径；&lt;code&gt;&amp;quot;:&lt;/code&gt;存最后执行的命令，使用&lt;code&gt;@:&lt;/code&gt;重复执行上一次命令；&lt;code&gt;&amp;quot;#&lt;/code&gt;存替换文件名&lt;/p&gt;
+&lt;p&gt; &lt;code&gt;&amp;quot;=&lt;/code&gt;保存表达式或命令结果，&lt;code&gt;ctrl-r =&lt;/code&gt;可以在插入模式下粘贴结果，&lt;code&gt;:%s/&amp;lt;Ctrl-r&amp;gt;/something/g&lt;/code&gt;可以直接替换之前搜索的结果&lt;br&gt; &lt;code&gt;:let @{寄存器名}=&amp;#39;&amp;lt;Ctrl-r {寄存器名}&amp;gt;&amp;#39;&lt;/code&gt; 可以修改寄存器内容&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;编辑模式 &lt;/p&gt;
+&lt;p&gt; &lt;code&gt;ctrl+r+{寄存器名}&lt;/code&gt; 粘贴寄存器内容&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;vim快捷键&quot;&gt;&lt;a href=&quot;#vim快捷键&quot; class=&quot;headerlink&quot; title=&quot;vim快捷键&quot;&gt;&lt;/a&gt;vim快捷键&lt;/h3&gt;&lt;h4 id=&quot;跳转&quot;&gt;&lt;a href=&quot;#跳转&quot; class=&quot;headerlink&quot; title=&quot;跳转&quot;&gt;&lt;
+    
+    </summary>
+    
+      <category term="编程工具" scheme="http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/"/>
+    
+    
+      <category term="Vim" scheme="http://rivenzoo.github.io/tags/Vim/"/>
+    
+  </entry>
+  
+  <entry>
     <title>go-code-style-guide</title>
     <link href="http://rivenzoo.github.io/2016/09/24/go-code-style-guide/"/>
     <id>http://rivenzoo.github.io/2016/09/24/go-code-style-guide/</id>
     <published>2016-09-24T07:18:47.000Z</published>
-    <updated>2016-09-24T07:24:05.000Z</updated>
+    <updated>2016-11-24T11:45:22.000Z</updated>
     
     <content type="html">&lt;h1 id=&quot;Go-Code-Style-Guide&quot;&gt;&lt;a href=&quot;#Go-Code-Style-Guide&quot; class=&quot;headerlink&quot; title=&quot;Go Code Style Guide&quot;&gt;&lt;/a&gt;Go Code Style Guide&lt;/h1&gt;&lt;p&gt;参考 &lt;a href=&quot;https://github.com/golang/go/wiki/CodeReviewComments&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Golang CodeReviewComments&lt;/a&gt; 整理而成。每条最后有&lt;code&gt;[require]&lt;/code&gt;的表示要求遵守。&lt;/p&gt;
 &lt;h3 id=&quot;Style-Guide&quot;&gt;&lt;a href=&quot;#Style-Guide&quot; class=&quot;headerlink&quot; title=&quot;Style Guide&quot;&gt;&lt;/a&gt;Style Guide&lt;/h3&gt;&lt;h4 id=&quot;工具&quot;&gt;&lt;a href=&quot;#工具&quot; class=&quot;headerlink&quot; title=&quot;工具&quot;&gt;&lt;/a&gt;工具&lt;/h4&gt;&lt;ol&gt;
@@ -39,7 +88,7 @@
 &lt;/ol&gt;
 &lt;h4 id=&quot;注释&quot;&gt;&lt;a href=&quot;#注释&quot; class=&quot;headerlink&quot; title=&quot;注释&quot;&gt;&lt;/a&gt;注释&lt;/h4&gt;&lt;ol&gt;
 &lt;li&gt;&lt;p&gt;注释文档应该是完整的句子，以描述性名词开始，句号结尾。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
- &lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;// A Request represents a request to run a command.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;type &lt;span class=&quot;type&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;/span&gt;&amp;#123; ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;// Encode writes the JSON encoding of req to w.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Encode&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(w io.Writer, req *Request)&lt;/span&gt;&lt;/span&gt; &amp;#123; ...&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+ &lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;// Request represents a request to run a command.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;type &lt;span class=&quot;type&quot;&gt;Request&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;struct&lt;/span&gt; &lt;/span&gt;&amp;#123; ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;comment&quot;&gt;// Encode writes the JSON encoding of req to w.&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Encode&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(w io.Writer, req *Request)&lt;/span&gt;&lt;/span&gt; &amp;#123; ...&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p&gt;包和可导出的方法要有注释文档，注释文档和包声明、方法之间不要有空格。&lt;code&gt;[require]&lt;/code&gt;&lt;/p&gt;
 &lt;/li&gt;
@@ -532,9 +581,9 @@ ControlPersist 10m
       <category term="编程语言" scheme="http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
     
     
-      <category term="C/C++" scheme="http://rivenzoo.github.io/tags/C-C/"/>
-    
       <category term="Linux" scheme="http://rivenzoo.github.io/tags/Linux/"/>
+    
+      <category term="C/C++" scheme="http://rivenzoo.github.io/tags/C-C/"/>
     
   </entry>
   

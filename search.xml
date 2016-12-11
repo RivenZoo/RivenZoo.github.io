@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title><![CDATA[vim-shortcut]]></title>
+      <url>http://rivenzoo.github.io/2016/12/12/vim-shortcut/</url>
+      <content type="html"><![CDATA[<h3 id="vim快捷键"><a href="#vim快捷键" class="headerlink" title="vim快捷键"></a>vim快捷键</h3><h4 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h4><ol>
+<li><p>行内跳转 </p>
+<p> <code>^</code> 行开头<br> <code>$</code> 行尾<br> <code>w/W</code> 下一个单词开头<br> <code>e/E</code> 下一个单词末尾<br> <code>b/B</code> 上一个单词开头<br> <code>f+{字符}</code> 下一个字符本身 <code>F+{字符}</code> 上一个字符本身<br> <code>t+{字符}</code> 下一个字符之后 <code>T+{字符}</code> 上一个字符之后</p>
+</li>
+</ol>
+<ol>
+<li><p>跨行跳转</p>
+<p> <code>h</code> 左 <code>j</code> 下 <code>k</code> 上 <code>l</code> 右<br> <code>{数字}+h/j/k/l</code> 跳转n个位置<br> <code>{数字}+G</code> 跳转到第n行<br> <code>*</code> 向下搜索光标对应单词<br> <code>#</code> 向上搜索光标对应单词<br> <code>gg</code> 文件开头<br> <code>G</code> 文件末尾<br> <code>ctrl+b</code> 向上翻页<br> <code>ctrl+f</code> 向下翻页<br> <code>ctrl+u</code> 向上翻半页<br> <code>ctrl+d</code> 向下翻半页<br> <code>ctrl+o</code> 跳转到光标上一个位置<br> <code>ctrl+i</code> 跳转到光标下一个位置</p>
+</li>
+</ol>
+<h4 id="编辑"><a href="#编辑" class="headerlink" title="编辑"></a>编辑</h4><ol>
+<li><p>行内编辑</p>
+<p> <code>x</code> 删除一个字符<br> <code>{数字}+x</code> 删除n个字符<br> <code>dd</code> 删除一行，包括换行<br> <code>d+{数字}+d</code> / <code>{数字}+dd</code> 删除n行<br> <code>d+w/W</code> / <code>d+e/E</code> 向后删除一个单词<br> <code>d+b/B</code> 向前删除一个单词<br> <code>D</code> / <code>d+$</code> 删除光标之后所有字符，不包括换行<br> <code>i</code> 光标之前插入<br> <code>a</code> 光标之后插入<br> <code>r</code> 替换光标处字符<br> <code>{数字}+r</code>    替换光标开始n个字符<br> <code>o</code> 插入下一行，光标跳转到新行<br> <code>O</code> 插入上一行，光标跳转到新行</p>
+</li>
+<li><p>复制粘贴</p>
+<p> <code>yy</code> 复制一行<br> <code>{数字}+yy</code> / <code>y+{数字}+y</code> 复制n行<br> <code>y+{位置}+y</code> 复制光标与某一行直接的内容<br> <code>y+w/W</code> / <code>y+e/E</code> 向后复制一个单词<br> <code>y+b/B</code> 向前复制一个单词<br> <code>p</code> 在光标后粘贴<br> <code>P</code> 在光标前粘贴<br> <code>{数字}+p</code> 多次粘贴</p>
+</li>
+</ol>
+<h4 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h4><ol>
+<li><p>常规模式</p>
+<p> <code>:h registers</code> 查看man page<br> <code>&quot;+{寄存器名}</code> 引用一个寄存器<br> <code>&quot;&quot;</code> 未命名寄存器，复制或删除都会替换它的内容<br> <code>&quot;0~&quot;9</code> <code>&quot;0</code> 保存最后一次复制内容 <code>&quot;1</code>~<code>&quot;9</code> 保存最后删除的内容，<code>&quot;1</code>为最近删除<br> <code>&quot;+{寄存器名}+y</code> 复制到指定寄存器<br> <code>&quot;+{寄存器名}+p</code> 粘贴指定寄存器内容<br> <code>:reg {寄存器名}</code> 查看寄存器内容<br> <code>&quot;.</code> <code>&quot;%</code> <code>&quot;:</code> <code>&quot;#</code> 只读寄存器<br> &gt;<br> <code>&quot;.</code>存最后插入的内容；<code>&quot;%</code>存当前文件相对于vim打开时的路径；<code>&quot;:</code>存最后执行的命令，使用<code>@:</code>重复执行上一次命令；<code>&quot;#</code>存替换文件名</p>
+<p> <code>&quot;=</code>保存表达式或命令结果，<code>ctrl-r =</code>可以在插入模式下粘贴结果，<code>:%s/&lt;Ctrl-r&gt;/something/g</code>可以直接替换之前搜索的结果<br> <code>:let @{寄存器名}=&#39;&lt;Ctrl-r {寄存器名}&gt;&#39;</code> 可以修改寄存器内容</p>
+</li>
+<li><p>编辑模式 </p>
+<p> <code>ctrl+r+{寄存器名}</code> 粘贴寄存器内容</p>
+</li>
+</ol>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[go-code-style-guide]]></title>
       <url>http://rivenzoo.github.io/2016/09/24/go-code-style-guide/</url>
       <content type="html"><![CDATA[<h1 id="Go-Code-Style-Guide"><a href="#Go-Code-Style-Guide" class="headerlink" title="Go Code Style Guide"></a>Go Code Style Guide</h1><p>参考 <a href="https://github.com/golang/go/wiki/CodeReviewComments" target="_blank" rel="external">Golang CodeReviewComments</a> 整理而成。每条最后有<code>[require]</code>的表示要求遵守。</p>
@@ -23,7 +56,7 @@
 </ol>
 <h4 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h4><ol>
 <li><p>注释文档应该是完整的句子，以描述性名词开始，句号结尾。<code>[require]</code></p>
- <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">// A Request represents a request to run a command.</span></span><br><span class="line">type <span class="type">Request</span> <span class="class"><span class="keyword">struct</span> </span>&#123; ...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Encode writes the JSON encoding of req to w.</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(w io.Writer, req *Request)</span></span> &#123; ...</span><br></pre></td></tr></table></figure>
+ <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">	<span class="comment">// Request represents a request to run a command.</span></span><br><span class="line">type <span class="type">Request</span> <span class="class"><span class="keyword">struct</span> </span>&#123; ...</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Encode writes the JSON encoding of req to w.</span></span><br><span class="line">	<span class="function"><span class="keyword">func</span> <span class="title">Encode</span><span class="params">(w io.Writer, req *Request)</span></span> &#123; ...</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>包和可导出的方法要有注释文档，注释文档和包声明、方法之间不要有空格。<code>[require]</code></p>
 </li>
