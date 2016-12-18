@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://rivenzoo.github.io/"/>
-  <updated>2016-12-11T16:25:11.000Z</updated>
+  <updated>2016-12-18T13:58:09.000Z</updated>
   <id>http://rivenzoo.github.io/</id>
   
   <author>
@@ -14,6 +14,49 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>go-doc-tips</title>
+    <link href="http://rivenzoo.github.io/2016/12/18/go-doc-tips/"/>
+    <id>http://rivenzoo.github.io/2016/12/18/go-doc-tips/</id>
+    <published>2016-12-18T13:57:03.000Z</published>
+    <updated>2016-12-18T13:58:09.000Z</updated>
+    
+    <content type="html">&lt;h3 id=&quot;Go-doc-tips&quot;&gt;&lt;a href=&quot;#Go-doc-tips&quot; class=&quot;headerlink&quot; title=&quot;Go doc tips&quot;&gt;&lt;/a&gt;Go doc tips&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;新建&lt;code&gt;doc.go&lt;/code&gt;作为文档文件，&lt;code&gt;package pkgname&lt;/code&gt;之前的注释作为文档。&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;文档注释的格式&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;相邻的行位于同一段落，分段需要添加空行&lt;/li&gt;
+&lt;li&gt;上下空行的短语会被作为接下来段落的head&lt;/li&gt;
+&lt;li&gt;预先格式化的文本需要跟周围的注释保持缩进&lt;/li&gt;
+&lt;li&gt;URL会被转换成链接，不需要标记&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;Go同一个目录可以添加&lt;code&gt;{pkg}_test&lt;/code&gt;的测试包。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;包&lt;code&gt;{pkg}_test&lt;/code&gt;的文件(&lt;code&gt;_test.go&lt;/code&gt;结尾)，函数名以&lt;code&gt;Example&lt;/code&gt;开头且没有参数的函数作为示例代码。&lt;/p&gt;
+ &lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExampleFoo&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;     &lt;span class=&quot;comment&quot;&gt;// documents the Foo function or type&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExampleBar_Qux&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// documents the Qux method of type Bar&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Example&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;        &lt;span class=&quot;comment&quot;&gt;// documents the package as a whole&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExampleReverse&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// Reverse first example&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExampleReverse_second&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// Reverse second example&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExampleReverse_third&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// Reverse thirdß example&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt; &lt;code&gt;_test.go&lt;/code&gt;结尾的文件，如果只包含一个&lt;code&gt;Example&lt;/code&gt;函数，并且有其他包级声明，整个文件会作为示例代码显示。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;// Output: olleh&lt;/code&gt;预期输出，示例函数可以作为&lt;code&gt;go test&lt;/code&gt;的测试用例。&lt;/p&gt;
+ &lt;figure class=&quot;highlight swift&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;package stringutil_test&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;import&lt;/span&gt; (&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;&quot;fmt&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;&quot;github.com/golang/example/stringutil&quot;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExampleReverse&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    fmt.&lt;span class=&quot;type&quot;&gt;Println&lt;/span&gt;(stringutil.&lt;span class=&quot;type&quot;&gt;Reverse&lt;/span&gt;(&lt;span class=&quot;string&quot;&gt;&quot;hello&quot;&lt;/span&gt;))&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// Output: olleh&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h3 id=&quot;Go-doc-tips&quot;&gt;&lt;a href=&quot;#Go-doc-tips&quot; class=&quot;headerlink&quot; title=&quot;Go doc tips&quot;&gt;&lt;/a&gt;Go doc tips&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;新建&lt;code&gt;doc.go&lt;/code&gt;作为文档文件，
+    
+    </summary>
+    
+      <category term="编程语言" scheme="http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
+    
+    
+      <category term="Go" scheme="http://rivenzoo.github.io/tags/Go/"/>
+    
+  </entry>
   
   <entry>
     <title>vim-shortcut</title>
@@ -581,9 +624,9 @@ ControlPersist 10m
       <category term="编程语言" scheme="http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
     
     
-      <category term="Linux" scheme="http://rivenzoo.github.io/tags/Linux/"/>
-    
       <category term="C/C++" scheme="http://rivenzoo.github.io/tags/C-C/"/>
+    
+      <category term="Linux" scheme="http://rivenzoo.github.io/tags/Linux/"/>
     
   </entry>
   

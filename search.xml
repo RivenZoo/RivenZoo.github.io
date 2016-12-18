@@ -4,6 +4,32 @@
   
     
     <entry>
+      <title><![CDATA[go-doc-tips]]></title>
+      <url>http://rivenzoo.github.io/2016/12/18/go-doc-tips/</url>
+      <content type="html"><![CDATA[<h3 id="Go-doc-tips"><a href="#Go-doc-tips" class="headerlink" title="Go doc tips"></a>Go doc tips</h3><ol>
+<li>新建<code>doc.go</code>作为文档文件，<code>package pkgname</code>之前的注释作为文档。</li>
+<li><p>文档注释的格式</p>
+<ol>
+<li>相邻的行位于同一段落，分段需要添加空行</li>
+<li>上下空行的短语会被作为接下来段落的head</li>
+<li>预先格式化的文本需要跟周围的注释保持缩进</li>
+<li>URL会被转换成链接，不需要标记</li>
+</ol>
+</li>
+<li><p>Go同一个目录可以添加<code>{pkg}_test</code>的测试包。</p>
+</li>
+<li><p>包<code>{pkg}_test</code>的文件(<code>_test.go</code>结尾)，函数名以<code>Example</code>开头且没有参数的函数作为示例代码。</p>
+ <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">	<span class="function"><span class="keyword">func</span> <span class="title">ExampleFoo</span><span class="params">()</span></span>     <span class="comment">// documents the Foo function or type</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ExampleBar_Qux</span><span class="params">()</span></span> <span class="comment">// documents the Qux method of type Bar</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Example</span><span class="params">()</span></span>        <span class="comment">// documents the package as a whole</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ExampleReverse</span><span class="params">()</span></span> <span class="comment">// Reverse first example</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ExampleReverse_second</span><span class="params">()</span></span> <span class="comment">// Reverse second example</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ExampleReverse_third</span><span class="params">()</span></span> <span class="comment">// Reverse thirdß example</span></span><br></pre></td></tr></table></figure>
+<p> <code>_test.go</code>结尾的文件，如果只包含一个<code>Example</code>函数，并且有其他包级声明，整个文件会作为示例代码显示。</p>
+</li>
+<li><p><code>// Output: olleh</code>预期输出，示例函数可以作为<code>go test</code>的测试用例。</p>
+ <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">package stringutil_test</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line">    <span class="string">"github.com/golang/example/stringutil"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ExampleReverse</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.<span class="type">Println</span>(stringutil.<span class="type">Reverse</span>(<span class="string">"hello"</span>))</span><br><span class="line">    <span class="comment">// Output: olleh</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[vim-shortcut]]></title>
       <url>http://rivenzoo.github.io/2016/12/12/vim-shortcut/</url>
       <content type="html"><![CDATA[<h3 id="vim快捷键"><a href="#vim快捷键" class="headerlink" title="vim快捷键"></a>vim快捷键</h3><h4 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h4><ol>
