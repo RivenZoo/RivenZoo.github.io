@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://rivenzoo.github.io/"/>
-  <updated>2017-01-20T14:04:18.000Z</updated>
+  <updated>2018-09-01T16:50:38.773Z</updated>
   <id>http://rivenzoo.github.io/</id>
   
   <author>
@@ -14,6 +14,89 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Git Hooks</title>
+    <link href="http://rivenzoo.github.io/2018/09/02/Git-Hooks/"/>
+    <id>http://rivenzoo.github.io/2018/09/02/Git-Hooks/</id>
+    <published>2018-09-01T16:48:50.000Z</published>
+    <updated>2018-09-01T16:50:38.773Z</updated>
+    
+    <content type="html">&lt;h2 id=&quot;Git-Hooks&quot;&gt;&lt;a href=&quot;#Git-Hooks&quot; class=&quot;headerlink&quot; title=&quot;Git Hooks&quot;&gt;&lt;/a&gt;Git Hooks&lt;/h2&gt;&lt;p&gt;git通过hooks来定制行为，所有的hooks存储在&lt;code&gt;hooks&lt;/code&gt;目录，客户端是&lt;code&gt;.git/hooks&lt;/code&gt;目录。&lt;br&gt;&lt;code&gt;git init&lt;/code&gt;的时候会在&lt;code&gt;.git/hooks&lt;/code&gt;目录生成很多示例hook，只要重命名文件就能启用。&lt;/p&gt;
+&lt;p&gt;hook分为&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;客户端hook&lt;/li&gt;
+&lt;li&gt;服务端hook&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;客户端hook不会被克隆，如果要强制实现某个git策略，需要用服务端hook。&lt;/p&gt;
+&lt;h3 id=&quot;客户端hook&quot;&gt;&lt;a href=&quot;#客户端hook&quot; class=&quot;headerlink&quot; title=&quot;客户端hook&quot;&gt;&lt;/a&gt;客户端hook&lt;/h3&gt;&lt;p&gt;客户端hook在工程目录下运行&lt;br&gt;客户端hook又可以分为&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;committing-workflow&lt;/li&gt;
+&lt;li&gt;email-workflow&lt;/li&gt;
+&lt;li&gt;其他&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;committing-workflow&quot;&gt;&lt;a href=&quot;#committing-workflow&quot; class=&quot;headerlink&quot; title=&quot;committing-workflow&quot;&gt;&lt;/a&gt;committing-workflow&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;pre-commit&lt;/p&gt;
+&lt;p&gt;  第一个运行的hook，在创建提交message之前就运行。&lt;br&gt;  返回非0则终止提交，但是可以用&lt;code&gt;git commit --no-verify&lt;/code&gt;来跳过检查。&lt;br&gt;  可以在这个hook中运行测试，检查代码格式，做代码静态检查等。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;prepare-commit-msg&lt;/p&gt;
+&lt;p&gt;  在默认commit message创建之后，打开message编辑器之前运行。&lt;br&gt;  会传入几个参数：当前消息文件路径、commit类型，如果是amend提交再加上commit的SHA-1。&lt;br&gt;  一般用来生成自动提交的信息。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;commit-msg&lt;/p&gt;
+&lt;p&gt;  编辑完提交消息之后运行。&lt;br&gt;  传入一个参数：保存用户提交消息的临时文件的路径。&lt;br&gt;  返回非0终止提交。&lt;br&gt;  一般用来验证消息格式。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;post-commit    &lt;/p&gt;
+&lt;p&gt;  提交完成之后运行。&lt;br&gt;  一般用来做提交通知。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&quot;email-workflow-hooks&quot;&gt;&lt;a href=&quot;#email-workflow-hooks&quot; class=&quot;headerlink&quot; title=&quot;email-workflow hooks&quot;&gt;&lt;/a&gt;email-workflow hooks&lt;/h4&gt;&lt;p&gt;通过&lt;code&gt;git am&lt;/code&gt;命令调用，如果你需要通过email来接收patch，可能会用到这个类型的hook。&lt;/p&gt;
+&lt;h4 id=&quot;其他&quot;&gt;&lt;a href=&quot;#其他&quot; class=&quot;headerlink&quot; title=&quot;其他&quot;&gt;&lt;/a&gt;其他&lt;/h4&gt;&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;pre-rebase&lt;/p&gt;
+&lt;p&gt;  rebase之前运行。&lt;br&gt;  返回非0终止rebase。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;post-rewrite&lt;/p&gt;
+&lt;p&gt;  &lt;code&gt;git commit --amend&lt;/code&gt;和&lt;code&gt;git rebase&lt;/code&gt;会触发这个hook。&lt;br&gt;  传入参数：触发hook的命令。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;post-checkout&lt;/p&gt;
+&lt;p&gt;  checkout成功之后运行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;post-merge&lt;/p&gt;
+&lt;p&gt;  merge成功之后运行。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;pre-push&lt;/p&gt;
+&lt;p&gt;  remote ref更新之后，传输对象之前运行。&lt;br&gt;  返回非0终止push。&lt;br&gt;  传入参数：远端的名称和地址。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;pre-auto-gc&lt;/p&gt;
+&lt;p&gt;  由&lt;code&gt;git gc --auto&lt;/code&gt;触发。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;服务端hook&quot;&gt;&lt;a href=&quot;#服务端hook&quot; class=&quot;headerlink&quot; title=&quot;服务端hook&quot;&gt;&lt;/a&gt;服务端hook&lt;/h3&gt;&lt;p&gt;服务端hook在服务器的工程&lt;code&gt;.git&lt;/code&gt;目录下运行&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;pre-receive&lt;/p&gt;
+&lt;p&gt;  服务端接收push第一个运行的hook，从stdin接收被push过来的references。&lt;br&gt;  返回非0则终止push。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;update&lt;/p&gt;
+&lt;p&gt;  类似pre-receive，但是每个分支运行一次。&lt;br&gt;  传入三个参数：分支名、前一个commit的SHA-1，当前push的SHA-1&lt;br&gt;  返回非0则终止push。    &lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;post-receive&lt;/p&gt;
+&lt;p&gt;  所有流程完成之后运行。&lt;br&gt;  跟pre-receive一样从stdin传入references。&lt;br&gt;  客户端等待这个脚本完成才断开连接。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;reference&quot;&gt;&lt;a href=&quot;#reference&quot; class=&quot;headerlink&quot; title=&quot;reference&quot;&gt;&lt;/a&gt;reference&lt;/h3&gt;&lt;p&gt;&lt;a href=&quot;https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks&lt;/a&gt;&lt;br&gt;&lt;a href=&quot;https://docs.gitlab.com/ee/administration/custom_hooks.html&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;https://docs.gitlab.com/ee/administration/custom_hooks.html&lt;/a&gt;&lt;/p&gt;
+</content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;Git-Hooks&quot;&gt;&lt;a href=&quot;#Git-Hooks&quot; class=&quot;headerlink&quot; title=&quot;Git Hooks&quot;&gt;&lt;/a&gt;Git Hooks&lt;/h2&gt;&lt;p&gt;git通过hooks来定制行为，所有的hooks存储在&lt;code&gt;hooks&lt;/co
+    
+    </summary>
+    
+      <category term="git" scheme="http://rivenzoo.github.io/categories/git/"/>
+    
+    
+      <category term="git hook" scheme="http://rivenzoo.github.io/tags/git-hook/"/>
+    
+  </entry>
   
   <entry>
     <title>Cpp Static Initialization Order Fiasco</title>

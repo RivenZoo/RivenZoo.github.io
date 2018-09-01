@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://rivenzoo.github.io/2018/09/02/Git-Hooks/</loc>
+    
+    <lastmod>2018-09-01T16:50:38.773Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://rivenzoo.github.io/2015/03/07/makefile-source-dependency/</loc>
     
     <lastmod>2017-03-10T14:25:49.000Z</lastmod>

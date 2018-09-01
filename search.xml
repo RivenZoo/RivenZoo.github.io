@@ -4,6 +4,73 @@
   
     
     <entry>
+      <title><![CDATA[Git Hooks]]></title>
+      <url>http://rivenzoo.github.io/2018/09/02/Git-Hooks/</url>
+      <content type="html"><![CDATA[<h2 id="Git-Hooks"><a href="#Git-Hooks" class="headerlink" title="Git Hooks"></a>Git Hooks</h2><p>git通过hooks来定制行为，所有的hooks存储在<code>hooks</code>目录，客户端是<code>.git/hooks</code>目录。<br><code>git init</code>的时候会在<code>.git/hooks</code>目录生成很多示例hook，只要重命名文件就能启用。</p>
+<p>hook分为</p>
+<ul>
+<li>客户端hook</li>
+<li>服务端hook</li>
+</ul>
+<p>客户端hook不会被克隆，如果要强制实现某个git策略，需要用服务端hook。</p>
+<h3 id="客户端hook"><a href="#客户端hook" class="headerlink" title="客户端hook"></a>客户端hook</h3><p>客户端hook在工程目录下运行<br>客户端hook又可以分为</p>
+<ul>
+<li>committing-workflow</li>
+<li>email-workflow</li>
+<li>其他</li>
+</ul>
+<h4 id="committing-workflow"><a href="#committing-workflow" class="headerlink" title="committing-workflow"></a>committing-workflow</h4><ul>
+<li><p>pre-commit</p>
+<p>  第一个运行的hook，在创建提交message之前就运行。<br>  返回非0则终止提交，但是可以用<code>git commit --no-verify</code>来跳过检查。<br>  可以在这个hook中运行测试，检查代码格式，做代码静态检查等。</p>
+</li>
+<li><p>prepare-commit-msg</p>
+<p>  在默认commit message创建之后，打开message编辑器之前运行。<br>  会传入几个参数：当前消息文件路径、commit类型，如果是amend提交再加上commit的SHA-1。<br>  一般用来生成自动提交的信息。</p>
+</li>
+<li><p>commit-msg</p>
+<p>  编辑完提交消息之后运行。<br>  传入一个参数：保存用户提交消息的临时文件的路径。<br>  返回非0终止提交。<br>  一般用来验证消息格式。</p>
+</li>
+<li><p>post-commit    </p>
+<p>  提交完成之后运行。<br>  一般用来做提交通知。</p>
+</li>
+</ul>
+<h4 id="email-workflow-hooks"><a href="#email-workflow-hooks" class="headerlink" title="email-workflow hooks"></a>email-workflow hooks</h4><p>通过<code>git am</code>命令调用，如果你需要通过email来接收patch，可能会用到这个类型的hook。</p>
+<h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul>
+<li><p>pre-rebase</p>
+<p>  rebase之前运行。<br>  返回非0终止rebase。</p>
+</li>
+<li><p>post-rewrite</p>
+<p>  <code>git commit --amend</code>和<code>git rebase</code>会触发这个hook。<br>  传入参数：触发hook的命令。</p>
+</li>
+<li><p>post-checkout</p>
+<p>  checkout成功之后运行。</p>
+</li>
+<li><p>post-merge</p>
+<p>  merge成功之后运行。</p>
+</li>
+<li><p>pre-push</p>
+<p>  remote ref更新之后，传输对象之前运行。<br>  返回非0终止push。<br>  传入参数：远端的名称和地址。</p>
+</li>
+<li><p>pre-auto-gc</p>
+<p>  由<code>git gc --auto</code>触发。</p>
+</li>
+</ul>
+<h3 id="服务端hook"><a href="#服务端hook" class="headerlink" title="服务端hook"></a>服务端hook</h3><p>服务端hook在服务器的工程<code>.git</code>目录下运行</p>
+<ul>
+<li><p>pre-receive</p>
+<p>  服务端接收push第一个运行的hook，从stdin接收被push过来的references。<br>  返回非0则终止push。</p>
+</li>
+<li><p>update</p>
+<p>  类似pre-receive，但是每个分支运行一次。<br>  传入三个参数：分支名、前一个commit的SHA-1，当前push的SHA-1<br>  返回非0则终止push。    </p>
+</li>
+<li><p>post-receive</p>
+<p>  所有流程完成之后运行。<br>  跟pre-receive一样从stdin传入references。<br>  客户端等待这个脚本完成才断开连接。</p>
+</li>
+</ul>
+<h3 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h3><p><a href="https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks" target="_blank" rel="external">https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks</a><br><a href="https://docs.gitlab.com/ee/administration/custom_hooks.html" target="_blank" rel="external">https://docs.gitlab.com/ee/administration/custom_hooks.html</a></p>
+]]></content>
+    </entry>
+    
+    <entry>
       <title><![CDATA[Cpp Static Initialization Order Fiasco]]></title>
       <url>http://rivenzoo.github.io/2017/01/20/Cpp-Static-initialization-order-fiasco/</url>
       <content type="html"><![CDATA[<h3 id="Static-initialization-order-fiasco"><a href="#Static-initialization-order-fiasco" class="headerlink" title="Static initialization order fiasco"></a>Static initialization order fiasco</h3><ul>
