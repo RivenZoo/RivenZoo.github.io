@@ -36,13 +36,6 @@
     </url>
 
     <url>
-        <loc>http://rivenzoo.github.io/categories/Linux/</loc>
-        <lastmod>2016-06-13T15:41:44.000Z</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.2</priority>
-    </url>
-
-    <url>
         <loc>http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7/</loc>
         <lastmod>2016-12-11T16:25:11.000Z</lastmod>
         <changefreq>weekly</changefreq>
@@ -59,6 +52,20 @@
     <url>
         <loc>http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/</loc>
         <lastmod>2018-10-16T16:21:03.855Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/categories/Linux/</loc>
+        <lastmod>2019-04-06T08:20:09.547Z</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.2</priority>
+    </url>
+
+    <url>
+        <loc>http://rivenzoo.github.io/categories/Linux/Network/</loc>
+        <lastmod>2019-04-06T08:20:09.547Z</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.2</priority>
     </url>
