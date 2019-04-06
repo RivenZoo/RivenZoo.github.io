@@ -3,6 +3,31 @@
   
     
     <entry>
+      <title>LVS notes</title>
+      <link href="/2019/04/06/LVS-notes/"/>
+      <url>/2019/04/06/LVS-notes/</url>
+      
+        <content type="html"><![CDATA[<h3 id="LVS-Linux-Virtual-Server"><a href="#LVS-Linux-Virtual-Server" class="headerlink" title="LVS (Linux Virtual Server)"></a>LVS (Linux Virtual Server)</h3><p>它是一种集群(Cluster)技术，采用IP负载均衡技术</p><p><img src="/images/15545381191583.jpg" alt=""></p><h4 id="主要组成部分"><a href="#主要组成部分" class="headerlink" title="主要组成部分"></a>主要组成部分</h4><p>负载调度器(load balancer/ Director)<br>服务器池(server pool/ Realserver)<br>共享存储(shared storage)</p><h4 id="负载均衡方式"><a href="#负载均衡方式" class="headerlink" title="负载均衡方式"></a>负载均衡方式</h4><ul><li><p>Virtual Server via Network Address Translation NAT(VS/NAT) </p><p>  NAT修改请求的目的VIP和端口为选出来的后端服务器的IP和端口，发送给真实处理的服务器<br>  服务器处理完成，通过设置默认网关为VIP，返回结果给调度器<br>  调度器修改结果的源IP和端口为VIP和端口，然后返回给客户端<br>  in/out的流量都要经过调度器<br>  当集群规模变大，调度器可能成为瓶颈</p></li><li><p>Virtual Server via IP Tunneling(VS/TUN)</p><p>  调度器对请求的IP报文进行封装，外层为真实服务器IP<br>  真实服务器收到包后进行解封，获得目的地址为VIP的包，通过设置隧道设备为VIP让内核处理这个包<br>  处理完直接返回给客户端，因为目的地址是VIP，返回的源地址也是VIP<br>  调度器转发的端口和后端服务器的端口需要一致，调度器需要维护连接状态<br>  <img src="/images/15545381400249.jpg" alt=""></p><p>  建立tunnel对IP报文封包转发，返回报文直接发送给用户<br>  需要内核支持IP-tunnel协议，性能较高</p></li><li><p>Virtual Server via Direct Routing(VS/DR)</p><p>  <img src="/images/15545381565629.jpg" alt=""></p></li></ul><pre><code>修改报文Mac地址路由给real-server，真实服务器配置一个非ARP设备的IP为VIP来接收并处理请求返回报文直接发送给用户调度器转发的端口和后端服务器的端口需要一致，调度器需要维护连接状态需要real-server有一块网卡和调度器连接在同一网段，性能高</code></pre><h5 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h5><table><thead><tr><th>_</th><th>VS/NAT</th><th>VS/TUN</th><th>VS/DR</th></tr></thead><tbody><tr><td>Server</td><td>any</td><td>Tunneling</td><td>Non-arp device</td></tr><tr><td>server network</td><td>private</td><td>LAN/WAN</td><td>LAN</td></tr><tr><td>server number</td><td>low (10~20)</td><td>High (100)</td><td>High (100)</td></tr><tr><td>server gateway</td><td>load balancer</td><td>own router</td><td>Own router</td></tr></tbody></table><h4 id="负载均衡调度算法"><a href="#负载均衡调度算法" class="headerlink" title="负载均衡调度算法"></a>负载均衡调度算法</h4><ul><li>最少的连接方式(Least Connection)</li><li>最快模式(Fastest)</li><li>观察模式(Observed)</li><li>预测模式(Predictive)</li><li>动态性能分配(Dynamic Ratio-APM)</li><li>动态服务器补充(Dynamic Server Act.)</li><li>服务质量(QoS)</li><li>服务类型(ToS)</li><li>规则模式</li></ul><h4 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h4><p>主备模式<br>ARP欺骗切换IP<br>多线路存活探测<br>高效状态同步</p><h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="http://www.linuxvirtualserver.org/zh/lvs3.html" target="_blank" rel="noopener">http://www.linuxvirtualserver.org/zh/lvs3.html</a></p>]]></content>
+      
+      
+      <categories>
+          
+          <category> Linux </category>
+          
+          <category> Network </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> LVS </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>Golang Channel小结</title>
       <link href="/2018/10/17/Golang-Channel%E5%B0%8F%E7%BB%93/"/>
       <url>/2018/10/17/Golang-Channel%E5%B0%8F%E7%BB%93/</url>
