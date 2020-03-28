@@ -1,6 +1,750 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta http-equiv="content-type" content="text/html; charset=utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="description" content="Tech,Idea,Funny,Daily"><title>Riven的博客 | Look Inside Deeply</title><link rel="stylesheet" type="text/css" href="/css/style.css?v=0.0.0"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/normalize/3.0.3/normalize.min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/pure-min.css"><link rel="stylesheet" type="text/css" href="//cdn.bootcss.com/pure/0.6.0/grids-responsive-min.css"><link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css"><script type="text/javascript" src="//cdn.bootcss.com/jquery/2.2.1/jquery.min.js"></script><link rel="Shortcut Icon" type="image/x-icon" href="/favicon.ico"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="apple-touch-icon-precomposed" href="/apple-touch-icon.png"><link rel="alternate" type="application/atom+xml" href="/atom.xml"></head><body><div class="body_container"><div id="header"><div class="site-name"><h1 class="hidden">Riven的博客</h1><a id="logo" href="/.">Riven的博客</a><p class="description">Look Inside Deeply</p></div><div id="nav-menu"><a href="/." class="current"><i class="fa fa-home"> 首页</i></a><a href="/archives/"><i class="fa fa-archive"> 归档</i></a><a href="/about/"><i class="fa fa-user"> 关于</i></a><a href="/atom.xml"><i class="fa fa-rss"> 订阅</i></a></div></div><div id="layout" class="pure-g"><div class="pure-u-1 pure-u-md-3-4"><div class="content_container"><div class="post"><h2 class="post-title"><a href="/2015/10/10/ubuntu-mount-ntfs/">Ubuntu Mount NTFS with system boot</a></h2><div class="post-meta">2015-10-10</div><a data-disqus-identifier="2015/10/10/ubuntu-mount-ntfs/" href="/2015/10/10/ubuntu-mount-ntfs/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ubuntu14.<span class="number">04</span></span><br><span class="line"></span><br><span class="line">$ vim <span class="regexp">/etc/</span>fstab</span><br><span class="line"></span><br><span class="line"><span class="regexp">/dev/</span>sda2 <span class="regexp">/media ntfs auto,user,rw,async,exec 0 0 # 加exec选项才可以执行挂载目录内的程序，相当于 mount -t ntfs /</span>dev<span class="regexp">/sda2 /m</span>edia -o exec</span><br></pre></td></tr></table></figure></div><p class="readmore"><a href="/2015/10/10/ubuntu-mount-ntfs/">阅读更多</a></p></div><div class="post"><h2 class="post-title"><a href="/2015/09/19/go-notes/">Go Notes</a></h2><div class="post-meta">2015-09-19</div><a data-disqus-identifier="2015/09/19/go-notes/" href="/2015/09/19/go-notes/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><h3 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h3><p>   <code>go test -v -run=[pattern]</code></p></div><p class="readmore"><a href="/2015/09/19/go-notes/">阅读更多</a></p></div><div class="post"><h2 class="post-title"><a href="/2015/04/15/python-brew/">PythonBrew</a></h2><div class="post-meta">2015-04-15</div><a data-disqus-identifier="2015/04/15/python-brew/" href="/2015/04/15/python-brew/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><h3 id="Warning"><a href="#Warning" class="headerlink" title="Warning"></a>Warning</h3><p>pythonbrew作者弃坑了，推荐了另外一个项目<a href="https://github.com/yyuu/pyenv" target="_blank" rel="noopener">https://github.com/yyuu/pyenv</a><br>功能跟这个有重叠，貌似更强大，用的人也更多</p></div><p class="readmore"><a href="/2015/04/15/python-brew/">阅读更多</a></p></div><div class="post"><h2 class="post-title"><a href="/2015/03/08/leveldb-source-1/">Take a look at Level source code</a></h2><div class="post-meta">2015-03-08</div><a data-disqus-identifier="2015/03/08/leveldb-source-1/" href="/2015/03/08/leveldb-source-1/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><p>最近看了一点leveldb源码，了解一下实现机制。</p></div><p class="readmore"><a href="/2015/03/08/leveldb-source-1/">阅读更多</a></p></div><div class="post"><h2 class="post-title"><a href="/2015/03/07/makefile-source-dependency/">Makefile获取依赖的源文件</a></h2><div class="post-meta">2015-03-07</div><a data-disqus-identifier="2015/03/07/makefile-source-dependency/" href="/2015/03/07/makefile-source-dependency/#disqus_thread" class="disqus-comment-count"></a><div class="post-content"><p>代码：<br><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">exclude=<span class="string">"_test"</span></span><br><span class="line"><span class="comment">#exclude="___"</span></span><br><span class="line">src=<span class="variable">$(<span class="built_in">wildcard</span> *[^<span class="variable">$(exclude)</span>].c ./subs/*.c)</span></span><br><span class="line"></span><br><span class="line">files=<span class="variable">$(<span class="built_in">notdir</span> <span class="variable">$(src)</span>)</span></span><br><span class="line"></span><br><span class="line">obj=<span class="variable">$(<span class="built_in">patsubst</span> %.c,%.o,<span class="variable">$(files)</span> )</span></span><br><span class="line"></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">        @echo <span class="variable">$(src)</span></span><br><span class="line">        @echo <span class="variable">$(files)</span></span><br><span class="line">        @echo <span class="variable">$(obj)</span></span><br><span class="line">        @echo <span class="string">"end"</span></span><br></pre></td></tr></table></figure></p></div><p class="readmore"><a href="/2015/03/07/makefile-source-dependency/">阅读更多</a></p></div><nav class="page-navigator"><a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">下一页</a></nav><script id="dsq-count-scr" src="//rivenzoo.disqus.com/count.js" async></script></div></div><div class="pure-u-1-4"><div id="sidebar"><div class="widget"><form action="//www.google.com/search" method="get" accept-charset="utf-8" target="_blank" class="search-form"><input type="text" name="q" maxlength="20" placeholder="Search"/><input type="hidden" name="sitesearch" value="http://rivenzoo.github.io"/></form></div><div class="widget"><div class="widget-title"><i class="fa fa-folder-o"> 分类</i></div><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/">Linux</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/Network/">Network</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/Linux/消息中间件/">消息中间件</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/git/">git</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/">数据库</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/数据库/NoSQL/">NoSQL</a></li></ul></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程工具/">编程工具</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/">编程语言</a><ul class="category-list-child"><li class="category-list-item"><a class="category-list-link" href="/categories/编程语言/安全/">安全</a></li></ul></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-star-o"> 标签</i></div><div class="tagcloud"><a href="/tags/Python/" style="font-size: 15px;">Python</a> <a href="/tags/git-hook/" style="font-size: 15px;">git hook</a> <a href="/tags/Go/" style="font-size: 15px;">Go</a> <a href="/tags/LVS/" style="font-size: 15px;">LVS</a> <a href="/tags/Linux/" style="font-size: 15px;">Linux</a> <a href="/tags/Rsa/" style="font-size: 15px;">Rsa</a> <a href="/tags/Leveldb/" style="font-size: 15px;">Leveldb</a> <a href="/tags/Makefile/" style="font-size: 15px;">Makefile</a> <a href="/tags/C-C/" style="font-size: 15px;">C/C++</a> <a href="/tags/Shell/" style="font-size: 15px;">Shell</a> <a href="/tags/Ubuntu/" style="font-size: 15px;">Ubuntu</a> <a href="/tags/NTFS/" style="font-size: 15px;">NTFS</a> <a href="/tags/SSH/" style="font-size: 15px;">SSH</a> <a href="/tags/Vim/" style="font-size: 15px;">Vim</a> <a href="/tags/Kafka/" style="font-size: 15px;">Kafka</a> <a href="/tags/Zookeeper/" style="font-size: 15px;">Zookeeper</a></div></div><div class="widget"><div class="widget-title"><i class="fa fa-file-o"> 最新文章</i></div><ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2020/03/28/go-code-style-guide/">go-code-style-guide</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/04/06/LVS-notes/">LVS notes</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/10/17/Golang-Channel小结/">Golang Channel小结</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/09/02/shell基础语法/">shell基础语法</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/09/02/Git-Hooks/">Git Hooks</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/01/20/Cpp-Static-initialization-order-fiasco/">Cpp Static Initialization Order Fiasco</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/18/go-doc-tips/">go-doc-tips</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/12/vim-shortcut/">vim-shortcut</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/05/24/ssh-settings/">ssh-settings</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/04/15/go-rsa-notes/">Go使用Rsa加解密</a></li></ul></div><div class="widget"><div class="widget-title"><i class="fa fa-comment-o"> 最近评论</i></div><script type="text/javascript" src="//rivenzoo.disqus.com/recent_comments_widget.js?num_items=5&amp;hide_avatars=1&amp;avatar_size=32&amp;excerpt_length=20&amp;hide_mods=1"></script></div><div class="widget"><div class="widget-title"><i class="fa fa-external-link"> 友情链接</i></div><ul></ul><a href="null" title="null" target="_blank"></a></div></div></div><div class="pure-u-1 pure-u-md-3-4"><div id="footer">© <a href="/." rel="nofollow">Riven的博客.</a> Powered by<a rel="nofollow" target="_blank" href="https://hexo.io"> Hexo.</a><a rel="nofollow" target="_blank" href="https://github.com/tufu9441/maupassant-hexo"> Theme</a> by<a rel="nofollow" target="_blank" href="https://github.com/pagecho"> Cho.</a></div></div></div><a id="rocket" href="#top" class="show"></a><script type="text/javascript" src="/js/totop.js?v=0.0.0" async></script><script type="text/javascript" src="//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.pack.js" async></script><script type="text/javascript" src="/js/fancybox.js?v=0.0.0" async></script><link rel="stylesheet" type="text/css" href="/css/jquery.fancybox.css?v=0.0.0"><script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-ga('create','UA-62916711-3','auto');ga('send','pageview');
-</script><script type="text/javascript" src="/js/codeblock-resizer.js?v=0.0.0"></script><script type="text/javascript" src="/js/smartresize.js?v=0.0.0"></script></div></body></html>
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" >
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="Tech,Idea,Funny,Daily" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+     Riven的博客
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  <link rel="stylesheet" href="/dist/main.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content on">
+      
+<section class="cover">
+    
+      
+      <a class="forkMe" href="https://github.com/rivenZoo"
+        target="_blank"><img width="149" height="149" src="/images/forkme.png"
+          class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+    
+  <div class="cover-frame">
+    <div class="bg-box">
+      <img src="/images/cover8.jpg" alt="image frame" />
+    </div>
+    <div class="cover-inner text-center text-white">
+      <h1><a href="/">Riven的博客</a></h1>
+      <div id="subtitle-box">
+        
+        <span id="subtitle"></span>
+        
+      </div>
+      <div>
+        
+      </div>
+    </div>
+  </div>
+  <div class="cover-learn-more">
+    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
+  </div>
+</section>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
+
+<div id="main">
+  <section class="outer">
+  <article class="articles">
+    
+    
+    
+    
+    <article id="post-ubuntu-mount-ntfs" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2015/10/10/ubuntu-mount-ntfs/"
+    >Ubuntu Mount NTFS with system boot</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2015/10/10/ubuntu-mount-ntfs/" class="article-date">
+  <time datetime="2015-10-10T03:14:23.000Z" itemprop="datePublished">2015-10-10</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ubuntu14.<span class="number">04</span></span><br><span class="line"></span><br><span class="line">$ vim <span class="regexp">/etc/</span>fstab</span><br><span class="line"></span><br><span class="line"><span class="regexp">/dev/</span>sda2 <span class="regexp">/media ntfs auto,user,rw,async,exec 0 0 # 加exec选项才可以执行挂载目录内的程序，相当于 mount -t ntfs /</span>dev<span class="regexp">/sda2 /m</span>edia -o exec</span><br></pre></td></tr></table></figure>
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ubuntu/">Ubuntu</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-go-notes" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2015/09/19/go-notes/"
+    >Go Notes</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2015/09/19/go-notes/" class="article-date">
+  <time datetime="2015-09-18T17:07:10.000Z" itemprop="datePublished">2015-09-19</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h3 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h3><p>   <code>go test -v -run=[pattern]</code></p>
+<h3 id="Benchmark"><a href="#Benchmark" class="headerlink" title="Benchmark"></a>Benchmark</h3><p>   <code>go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t]</code></p>
+<h3 id="Analysis"><a href="#Analysis" class="headerlink" title="Analysis"></a>Analysis</h3><ul>
+<li><p>race:</p>
+<p>  <code>go test -v -run=[pattern] -race</code></p>
+</li>
+<li><p>cpu:</p>
+<p>  <code>go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t] -cpuprofile=[output]</code></p>
+</li>
+<li><p>mem:</p>
+<p>  <code>go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t] -memprofile=[output]</code></p>
+</li>
+<li><p>block:</p>
+<p>  <code>go test -v -run=bench -bench=[pattern] -cpu=[n] -benchtime=[t] -blockprofile=[output]</code></p>
+<p>  <code>go tool pprof [program].test [output]</code></p>
+</li>
+</ul>
+<h3 id="GODEBUG"><a href="#GODEBUG" class="headerlink" title="GODEBUG"></a>GODEBUG</h3><p>   runtime提供了环境变量来控制程序。GODEBUG是其中一，它可以设置很多值，格式<code>name=value,name=val</code>，如开启gctrace：<code>$ GODEBUG=&#39;gctrace=1&#39; your_program</code>，会在标准错误输出gc信息。</p>
+<h3 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h3><p>   推荐使用<a href="https://github.com/pquerna/ffjson" target="_blank" rel="noopener">ffjson</a><br>   用它替换标准库后，编解码效率提高2倍。对于一些需要编码的大对象，可以采用sync.Pool缓存一定大小的bytes.Buffer，然后直接写buffer来完成json编码，性能有一定提高，在我笔记本上测10*1024的字符串数组，大概比标准json快20%，结果受到分配buffer大小的影响。在对json对象编码的时候，如果有字符串字段，并且字符串可能出现json格式用到的字符，最好预先对字符串编码，否则json编码的时候处理字符串转义会导致性能下降，如果字符串很长，可能会成为瓶颈。</p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-python-brew" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2015/04/15/python-brew/"
+    >PythonBrew</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2015/04/15/python-brew/" class="article-date">
+  <time datetime="2015-04-15T11:44:00.000Z" itemprop="datePublished">2015-04-15</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h3 id="Warning"><a href="#Warning" class="headerlink" title="Warning"></a>Warning</h3><p>pythonbrew作者弃坑了，推荐了另外一个项目<a href="https://github.com/yyuu/pyenv" target="_blank" rel="noopener">https://github.com/yyuu/pyenv</a><br>功能跟这个有重叠，貌似更强大，用的人也更多</p>
+<h3 id="pythonbrew多版本管理工具"><a href="#pythonbrew多版本管理工具" class="headerlink" title="pythonbrew多版本管理工具"></a>pythonbrew多版本管理工具</h3><p>pythonbrew是一个python版本管理的工具，具体命令见<a href="http://pythonbrew.readthedocs.org/en/latest/" target="_blank" rel="noopener">http://pythonbrew.readthedocs.org/en/latest/</a>。</p>
+<h4 id="pythonbrew-install-2-5-6-的问题"><a href="#pythonbrew-install-2-5-6-的问题" class="headerlink" title="pythonbrew install 2.5.6 的问题"></a>pythonbrew install 2.5.6 的问题</h4><p>在安装python 2.5.6的时候遇到编译错误<code>make: *** [Modules/getbuildinfo.o] error 1</code>，参考了<a href="http://askubuntu.com/questions/398481/make-python2-5-failed-on-ubuntu-13-04" target="_blank" rel="noopener">http://askubuntu.com/questions/398481/make-python2-5-failed-on-ubuntu-13-04</a>这里的解决方法。<br>在python 2.5.6下载解压后的目录<br><code>/HOME/.pythonbrew/build/Python-2.5.6</code>，<br>手动执行<br><code>SVNVERSION=not-found ./configure --prefix=/HOME/.pythonbrew/pythons/Python-2.5.6</code>，<br>把python2.5.6安装到了pythonbrew预定的目录就可以了。</p>
+<p>pythonbrew管理虚拟环境</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ pythonbrew venv init</span><br><span class="line">$ pythonbrew venv create proj -<span class="selector-tag">p</span> x<span class="selector-class">.x</span><span class="selector-class">.x</span></span><br></pre></td></tr></table></figure>
+
+<p>以上2步就创建了一个可用的虚拟环境，然后到需要环境的工程，执行<code>pythonbrew venv use proj</code>就可以使用之前创建的虚拟环境了。</p>
+<h5 id="ps-pythonbrew有个别名pybrew。"><a href="#ps-pythonbrew有个别名pybrew。" class="headerlink" title="ps:pythonbrew有个别名pybrew。"></a>ps:pythonbrew有个别名pybrew。</h5>
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Python/">Python</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-leveldb-source-1" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2015/03/08/leveldb-source-1/"
+    >Take a look at Level source code</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2015/03/08/leveldb-source-1/" class="article-date">
+  <time datetime="2015-03-08T13:32:02.000Z" itemprop="datePublished">2015-03-08</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a> / <a class="article-category-link" href="/categories/数据库/NoSQL/">NoSQL</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>最近看了一点leveldb源码，了解一下实现机制。</p>
+<p>之前也看过leveldb相关介绍以及别人的分析blog，已经有了一定了解。leveldb如其名，按照层级来组织数据，数据从内存到磁盘一层一层迁移。在内存中是通过skiplist来管理数据，而磁盘上则是一种名为SSTable(Sorted Strings Table)的结构来存储数据的。</p>
+      
+      <a class="article-more-link" href="/2015/03/08/leveldb-source-1/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leveldb/">Leveldb</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-makefile-source-dependency" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2015/03/07/makefile-source-dependency/"
+    >Makefile获取依赖的源文件</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2015/03/07/makefile-source-dependency/" class="article-date">
+  <time datetime="2015-03-07T15:52:46.000Z" itemprop="datePublished">2015-03-07</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>代码：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">exclude=<span class="string">"_test"</span></span><br><span class="line"><span class="comment">#exclude="___"</span></span><br><span class="line">src=<span class="variable">$(<span class="built_in">wildcard</span> *[^<span class="variable">$(exclude)</span>].c ./subs/*.c)</span></span><br><span class="line"></span><br><span class="line">files=<span class="variable">$(<span class="built_in">notdir</span> <span class="variable">$(src)</span>)</span></span><br><span class="line"></span><br><span class="line">obj=<span class="variable">$(<span class="built_in">patsubst</span> %.c,%.o,<span class="variable">$(files)</span> )</span></span><br><span class="line"></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">        @echo <span class="variable">$(src)</span></span><br><span class="line">        @echo <span class="variable">$(files)</span></span><br><span class="line">        @echo <span class="variable">$(obj)</span></span><br><span class="line">        @echo <span class="string">"end"</span></span><br></pre></td></tr></table></figure>
+
+<p>wildcard通过通配符来匹配文件并将结果展开，第一个参数排除了_test.c的文件。<br>notdir去掉src中的目录，只保留文件名<br>patsubst进行替换，把.c换成.o<br>上面代码参考Makefile中的wildcard用法这篇blog，稍微修改了下。</p>
+<h5 id="UPDATE"><a href="#UPDATE" class="headerlink" title="UPDATE"></a>UPDATE</h5><p>上面的代码</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">exclude=<span class="string">"_test"</span></span><br><span class="line"><span class="comment">#exclude="___"</span></span><br><span class="line">src=<span class="variable">$(<span class="built_in">wildcard</span> *[^<span class="variable">$(exclude)</span>].c ./subs/*.c)</span></span><br></pre></td></tr></table></figure>
+
+<p>其实有点问题，*[^$<em>test].c这个正则只能过滤.c之前是’</em>‘,’t’,’e’,’s’这4个字符的文件名，达不到想要的目的。<br>需要修改一下，对src进行替换</p>
+<p><code>$(patsubst %_test.c,, $(src))</code></p>
+<p>这样就把文件列表中含_test.c的去掉了。修改后为</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">src :=<span class="variable">$(<span class="built_in">wildcard</span> *.c ./subs/*.c)</span></span><br><span class="line">src :=<span class="variable">$(<span class="built_in">patsubst</span> %_test.c,,<span class="variable">$(src)</span>)</span></span><br><span class="line"></span><br><span class="line">files :=<span class="variable">$(<span class="built_in">notdir</span> <span class="variable">$(src)</span>)</span></span><br><span class="line"></span><br><span class="line">obj :=<span class="variable">$(<span class="built_in">patsubst</span> %.c,%.o,<span class="variable">$(files)</span> )</span></span><br><span class="line"></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">        @echo <span class="variable">$(src)</span></span><br><span class="line">        @echo <span class="variable">$(files)</span></span><br><span class="line">        @echo <span class="variable">$(obj)</span></span><br><span class="line">        @echo <span class="string">"end"</span></span><br></pre></td></tr></table></figure>
+
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Makefile/">Makefile</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+  </article>
+  
+
+  
+  <nav class="page-nav">
+    
+    <a class="extend prev" rel="prev" href="/page/2/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/">下一页</a>
+  </nav>
+  
+</section>
+</div>
+
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2015-2020
+        RivenZoo
+      </li>
+      <li>
+        
+        Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278725971&amp;web_id=1278725971'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Riven的博客"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+      strings: ['日々私たちが过ごしている日常は、実は、奇迹の连続なのかもしれな', '想要的都拥有，得不到的都释怀', ''],
+      startDelay: 0,
+      typeSpeed: 200,
+      loop: true,
+      backSpeed: 100,
+      showCursor: true
+    });
+  } catch (err) {
+  }
+
+</script>
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+<script src="/dist/main.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+
+    
+  </div>
+</body>
+
+</html>
