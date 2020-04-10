@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" >
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="Tech,Idea,Funny,Daily" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    zap源码阅读 |  Riven的博客
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  <link rel="stylesheet" href="/dist/main.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content on">
+      <section class="outer">
+  <article id="post-zap源码阅读" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  zap源码阅读
+</h1>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/04/10/zap源码阅读/" class="article-date">
+  <time datetime="2020-04-10T14:19:01.000Z" itemprop="datePublished">2020-04-10</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.1k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">9分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>zap是Uber开源的golang日志库，以结构化日志、高性能、可扩展的特点受到许多开发者的欢迎。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="创建logger"><a href="#创建logger" class="headerlink" title="创建logger"></a>创建logger</h3><p>zap对外提供了两个不同的日志对象，强类型的Logger和简化使用方式的SugaredLogger</p>
+<ul>
+<li><p>Logger创建</p>
+<ul>
+<li><p>低级API</p>
+<p>  <code>func New(core zapcore.Core, options ...Option) *Logger</code></p>
+</li>
+<li><p>通过配置创建<br>  使用了builder模式，通过Config对象的Build方法创建</p>
+<p>  <code>func (cfg Config) Build(opts ...Option) (*Logger, error)</code></p>
+<p>  配置对象可以使用预设的<code>NewDevelopmentConfig</code>或<code>NewProductionConfig</code>创建，也可以反序列化json或yaml来创建<br>  Option提供了动态修改Logger配置的能力，定义为接口，每个实现在闭包中修改Logger对象</p>
+  <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type Option<span class="built_in"> interface </span>&#123;</span><br><span class="line">	apply(*Logger)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>构造带固定上下文的Logger</p>
+<p>  <code>func (log *Logger) With(fields ...Field) *Logger</code></p>
+</li>
+</ul>
+</li>
+<li><p>SugaredLogger</p>
+<ul>
+<li><p>封装了Logger，可以和Logger互相转换</p>
+<p>  <code>func (log *Logger) Sugar() *SugaredLogger</code><br>  <code>func (s *SugaredLogger) Desugar() *Logger</code></p>
+<p>  内部通过<code>sweetenFields</code>方法把<code>(string, interface{})</code>类型的kv参数转换为强类型的<code>Field</code></p>
+<p>  <code>func (s *SugaredLogger) sweetenFields(args []interface{}) []Field</code></p>
+</li>
+<li><p>通过<code>With</code>方法构造一个带固定上下文的SugaredLogger</p>
+<p>  <code>func (s *SugaredLogger) With(args ...interface{}) *SugaredLogger</code></p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="打印日志"><a href="#打印日志" class="headerlink" title="打印日志"></a>打印日志</h3><ul>
+<li><p>Logger</p>
+<p>  msg传入简单字符串，其他日志信息通过<code>Field</code>包装起来<br>  <code>func (log *Logger) Info(msg string, fields ...Field)</code></p>
+  <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logger.<span class="builtin-name">Info</span>(<span class="string">"msg"</span>, zap.String(<span class="string">"foo"</span>, <span class="string">"bar"</span>))</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>SugaredLogger</p>
+<p>  格式化msg的方法<br>  <code>func (s *SugaredLogger) Infof(template string, args ...interface{})</code></p>
+  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">sugar</span><span class="selector-class">.Infof</span>(<span class="string">"Failed to fetch URL: %s"</span>, url)</span><br></pre></td></tr></table></figure>
+
+<p>  带kv参数的方法<br>  <code>func (s *SugaredLogger) Infow(msg string, keysAndValues ...interface{})</code></p>
+  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sugar.Infow(<span class="string">"Failed to fetch URL."</span>,</span><br><span class="line">	<span class="comment">// Structured context as loosely typed key-value pairs.</span></span><br><span class="line">	<span class="string">"url"</span>, url,</span><br><span class="line">	<span class="string">"attempt"</span>, <span class="number">3</span>,</span><br><span class="line">	<span class="string">"backoff"</span>, <span class="selector-tag">time</span><span class="selector-class">.Second</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><h3 id="分层"><a href="#分层" class="headerlink" title="分层"></a>分层</h3><p>zapcore 封装日志的Core接口和实现，以及level、entry、encoder、field等基础功能<br>zap 提供高层接口，包括sugarlogger、配置、输出接口<code>Sink</code>和实现、HTTP修改level接口等<br>其他包提供支持功能。buffer实现了一个默认size为<strong>1k</strong>的buffer池。zapgrpc封装了与grpclog兼容的日志。</p>
+<a id="more"></a>
+<h3 id="创建流程"><a href="#创建流程" class="headerlink" title="创建流程"></a>创建流程</h3><p>Logger结构体很轻量，核心的core是一个接口，创建一个新的对象开销不大，一般使用也可以重用Logger对象。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">type Logger <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	core zapcore.Core</span><br><span class="line"></span><br><span class="line">	development <span class="keyword">bool</span></span><br><span class="line">	name        <span class="built_in">string</span></span><br><span class="line">	errorOutput zapcore.WriteSyncer</span><br><span class="line"></span><br><span class="line">	addCaller <span class="keyword">bool</span></span><br><span class="line">	addStack  zapcore.LevelEnabler</span><br><span class="line"></span><br><span class="line">	callerSkip <span class="keyword">int</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><code>New</code>方法<br>  <code>func New(core zapcore.Core, options ...Option) *Logger</code></p>
+<p>  根据传入的参数赋值，然后调用<code>WithOptions</code>设置Logger。</p>
+</li>
+<li><p><code>Config.Build</code><br>  <code>func (cfg Config) Build(opts ...Option) (*Logger, error)</code></p>
+<p>  根据配置构造encoder，输出对象，然后调用<code>zapcore.NewCore</code>创建core，最后根据参数opts来设置Logger</p>
+<p>  encoder的创建使用了简单工厂，内部维护了一个字符串到构造函数的映射，根据配置来决定使用哪个encoder。可以用<code>RegisterEncoder</code>注册新的encoder。</p>
+<p>  输出对象也使用了简单工厂，内部维护了URL的scheme到构造函数的映射。通过<code>url.URL</code>来决定输出对象接口<code>Sink</code>的实现。可以用<code>RegisterSink</code>来注册新的<code>Sink</code>实现。</p>
+  <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cfg Config)</span> <span class="title">Build</span><span class="params">(opts ...Option)</span> <span class="params">(*Logger, error)</span></span> &#123;</span><br><span class="line">	enc, err := cfg.buildEncoder()</span><br><span class="line">	<span class="comment">// error handle</span></span><br><span class="line"></span><br><span class="line">	sink, errSink, err := cfg.openSinks()</span><br><span class="line">	<span class="comment">// error handle</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> cfg.Level == (AtomicLevel&#123;&#125;) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span>, fmt.Errorf(<span class="string">"missing Level"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	log := New(</span><br><span class="line">		zapcore.NewCore(enc, sink, cfg.Level),</span><br><span class="line">		cfg.buildOptions(errSink)...,</span><br><span class="line">	)</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">len</span>(opts) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		log = log.WithOptions(opts...)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> log, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>zapcore.NewCore</code>创建了一个ioCore，主要的日志编码和输出逻辑在它的<code>Write</code>方法中实现</p>
+  <figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">func NewCore(<span class="keyword">enc</span> Encoder, ws WriteSyncer, enab LevelEnabler) Core &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;ioCore&#123;</span><br><span class="line">		LevelEnabler: enab,</span><br><span class="line">		<span class="keyword">enc</span>:          <span class="keyword">enc</span>,</span><br><span class="line">		<span class="keyword">out</span>:          ws,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<h3 id="打印日志流程"><a href="#打印日志流程" class="headerlink" title="打印日志流程"></a>打印日志流程</h3><p>以Info函数为例</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(log *Logger)</span> <span class="title">Info</span><span class="params">(msg <span class="keyword">string</span>, fields ...Field)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> ce := log.check(InfoLevel, msg); ce != <span class="literal">nil</span> &#123;</span><br><span class="line">		ce.Write(fields...)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>执行打印之前会调用Logger的check方法，如果不满足条件就不会创建对象和调用Write方法。</p>
+<p>  <code>check</code>方法会先检查level，如果不满足条件就返回nil了。如果满足条件会创建日志entry，并调用core的check，如果core.Check返回了<code>zapcore.CheckedEntry</code>才会继续执行添加其他日志信息操作。实际打印的逻辑发生在<code>zapcore.CheckedEntry</code>的Write方法里面。</p>
+  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">func (log *Logger) check(lvl zapcore<span class="selector-class">.Level</span>, msg string) *zapcore.CheckedEntry&#123;</span><br><span class="line">	<span class="comment">// check must always be called directly by a method in the Logger interface</span></span><br><span class="line">	<span class="comment">// (e.g., Check, Info, Fatal).</span></span><br><span class="line">	const callerSkipOffset = <span class="number">2</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Check the level first to reduce the cost of disabled log calls.</span></span><br><span class="line">	<span class="comment">// Since Panic and higher may exit, we skip the optimization for those levels.</span></span><br><span class="line">	<span class="keyword">if</span> lvl &lt; zapcore<span class="selector-class">.DPanicLevel</span> &amp;&amp; !log<span class="selector-class">.core</span><span class="selector-class">.Enabled</span>(lvl) &#123;</span><br><span class="line">		return nil</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Create basic checked entry thru the core; this will be non-nil if the</span></span><br><span class="line">	<span class="comment">// log message will actually be written somewhere.</span></span><br><span class="line">	ent := zapcore.Entry&#123;</span><br><span class="line">		LoggerName: log<span class="selector-class">.name</span>,</span><br><span class="line">		Time:       <span class="selector-tag">time</span>.Now(),</span><br><span class="line">		Level:      lvl,</span><br><span class="line">		Message:    msg,</span><br><span class="line">	&#125;</span><br><span class="line">	ce := log<span class="selector-class">.core</span><span class="selector-class">.Check</span>(ent, nil)</span><br><span class="line">	willWrite := ce != nil</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Set up any required terminal behavior.</span></span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// Only do further annotation if we're going to write this message; checked</span></span><br><span class="line">	<span class="comment">// entries that exist only for terminal behavior don't benefit from</span></span><br><span class="line">	<span class="comment">// annotation.</span></span><br><span class="line">	<span class="keyword">if</span> !willWrite &#123;</span><br><span class="line">		return ce</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Thread the error output through to the CheckedEntry.</span></span><br><span class="line">	ce<span class="selector-class">.ErrorOutput</span> = log.errorOutput</span><br><span class="line">	<span class="comment">// add caller</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// add stack</span></span><br><span class="line"></span><br><span class="line">	return ce</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>core接口实现的Check方法<br>  不同的core实现会执行不同操作，但是要执行core的Write方法需要调用<code>AddCore</code>把自己加入到<code>zapcore.CheckedEntry</code>的core列表里面。<br>  以ioCore为例</p>
+  <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(<span class="built_in">c</span> *ioCore)</span></span> <span class="type">Check</span>(ent <span class="type">Entry</span>, ce *<span class="type">CheckedEntry</span>) *<span class="type">CheckedEntry</span> &#123;</span><br><span class="line">	<span class="keyword">if</span> <span class="built_in">c</span>.<span class="type">Enabled</span>(ent.<span class="type">Level</span>) &#123;</span><br><span class="line">		<span class="keyword">return</span> ce.<span class="type">AddCore</span>(ent, <span class="built_in">c</span>) <span class="comment">// 加入到待执行core列表</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> ce</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p><code>zapcore.CheckedEntry</code>保存了日志原始信息<code>Entry</code>，以及需要执行的core，打印日志后需要执行的动作标识等<br>  <code>AddCore</code>方法会通过<code>getCheckedEntry</code>方法从<code>sync.Pool</code>中获取CheckedEntry对象，把core加入到待执行列表</p>
+  <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> CheckedEntry <span class="keyword">struct</span> &#123;</span><br><span class="line">	Entry</span><br><span class="line">	ErrorOutput WriteSyncer</span><br><span class="line">	dirty       <span class="keyword">bool</span> <span class="comment">// best-effort detection of pool misuse</span></span><br><span class="line">	should      CheckWriteAction</span><br><span class="line">	cores       []Core</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(ce *CheckedEntry)</span> <span class="title">AddCore</span><span class="params">(ent Entry, core Core)</span> *<span class="title">CheckedEntry</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> ce == <span class="literal">nil</span> &#123;</span><br><span class="line">		ce = getCheckedEntry()</span><br><span class="line">		ce.Entry = ent</span><br><span class="line">	&#125;</span><br><span class="line">	ce.cores = <span class="built_in">append</span>(ce.cores, core)</span><br><span class="line">	<span class="keyword">return</span> ce</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  执行日志打印的Write方法</p>
+  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">func (ce *CheckedEntry) Write(fields ...Field) &#123;</span><br><span class="line">	<span class="keyword">if</span> ce == nil &#123;</span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> ce<span class="selector-class">.dirty</span> &#123;</span><br><span class="line">		<span class="comment">// 输出内部错误信息</span></span><br><span class="line">		return</span><br><span class="line">	&#125;</span><br><span class="line">	ce<span class="selector-class">.dirty</span> = true</span><br><span class="line"></span><br><span class="line">	<span class="selector-tag">var</span> err error</span><br><span class="line">	<span class="comment">// **关键路径**：执行多个core，其他的core例如hook、tee等功能都依赖它来执行</span></span><br><span class="line">	<span class="keyword">for</span> <span class="selector-tag">i</span> := range ce<span class="selector-class">.cores</span> &#123;</span><br><span class="line">		err = multierr.Append(err, ce<span class="selector-class">.cores</span>[i].Write(ce<span class="selector-class">.Entry</span>, fields))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> ce<span class="selector-class">.ErrorOutput</span> != nil &#123;</span><br><span class="line">		<span class="comment">// 输出内部错误信息</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	should, msg := ce<span class="selector-class">.should</span>, ce.Message</span><br><span class="line">	putCheckedEntry(ce)</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 执行后续动作</span></span><br><span class="line">	switch should &#123;</span><br><span class="line">	case WriteThenPanic:</span><br><span class="line">		panic(msg)</span><br><span class="line">	case WriteThenFatal:</span><br><span class="line">		exit.Exit()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>core接口实现的Write方法。具体日志处理逻辑由这个方法实现。</p>
+<p>  ioCore</p>
+  <figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(<span class="built_in">c</span> *ioCore)</span></span> <span class="type">Write</span>(ent <span class="type">Entry</span>, fields []<span class="type">Field</span>) error &#123;</span><br><span class="line">	<span class="comment">// 日志编码，调用具体的编码器实现，结果buf由它分配，使用完需要手动释放</span></span><br><span class="line">	buf, err := <span class="built_in">c</span>.enc.<span class="type">EncodeEntry</span>(ent, fields)</span><br><span class="line">	<span class="comment">// 处理错误</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 输出日志，调用具体输出实现</span></span><br><span class="line">	<span class="number">_</span>, err = <span class="built_in">c</span>.out.<span class="type">Write</span>(buf.<span class="type">Bytes</span>())</span><br><span class="line">	<span class="comment">// 归还buf</span></span><br><span class="line">	buf.<span class="type">Free</span>()</span><br><span class="line">	<span class="comment">// 处理错误</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">if</span> ent.<span class="type">Level</span> &gt; <span class="type">ErrorLevel</span> &#123;</span><br><span class="line">		<span class="comment">// Since we may be crashing the program, sync the output. Ignore Sync</span></span><br><span class="line">		<span class="comment">// errors, pending a clean solution to issue #370.</span></span><br><span class="line">		<span class="built_in">c</span>.<span class="type">Sync</span>()</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<ul>
+<li><p>encoder接口</p>
+<p>  zap定义了所有基础类型和容器对象类型的编码接口，内部有json和console两个实现。<br>  json编码器从buffer池获取结果buf，通过字符串拼接的方式把日志拼装成json格式，避免了使用<code>encoding/json</code>的反射开销。</p>
+</li>
+<li><p>WriteSyncer接口    </p>
+<p>  zap实现了输出到文件(stdout/stderr)，更高级的功能例如rotation需要自定义WriteSyncer实现然后用它来创建core</p>
+</li>
+</ul>
+<h3 id="日志扩展"><a href="#日志扩展" class="headerlink" title="日志扩展"></a>日志扩展</h3><p>Logger对象保存的core接口可以对应多种实现，zap内部扩展功能例如Hook、sampler都是通过保存上一个core形成一个新的代理对象，通过重写<code>Check</code>/<code>Write</code>方法来实现自己的逻辑。<br>zap提供了工具函数来包装一个core</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WrapCore</span><span class="params">(f func(zapcore.Core)</span> <span class="title">zapcore</span>.<span class="title">Core</span>) 	<span class="title">Option</span> &#123;</span></span><br><span class="line">	<span class="keyword">return</span> optionFunc(<span class="function"><span class="keyword">func</span><span class="params">(log *Logger)</span> &#123;</span></span><br><span class="line">		<span class="built_in">log</span>.core = f(<span class="built_in">log</span>.core)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>hook在Write方法中调用注册的函数</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">func (<span class="keyword">h</span> *hooked) Write(ent Entry, _ []Field) <span class="keyword">error</span> &#123;</span><br><span class="line">	<span class="comment">// Since our downstream had a chance to register itself directly with the</span></span><br><span class="line">	<span class="comment">// CheckedMessage, we don't need to call it here.</span></span><br><span class="line">	<span class="keyword">var</span> <span class="keyword">err</span> <span class="keyword">error</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="keyword">range</span> <span class="keyword">h</span>.funcs &#123;</span><br><span class="line">		<span class="keyword">err</span> = multierr.<span class="keyword">Append</span>(<span class="keyword">err</span>, <span class="keyword">h</span>.funcs[i](ent))</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">err</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h2><p>zap在优化性能方法做了以下一些措施</p>
+<ul>
+<li><p>避免创建多余的<code>Entry</code>和<code>CheckedEntry</code></p>
+<p>  写日志之前会调用<code>Logger.check</code>，不满足条件不会创建<code>Entry</code>对象<br>  在<code>AddCore</code>方法中才会创建<code>CheckedEntry</code>，而只有真正要执行的core才会调用<code>AddCore</code>方法</p>
+</li>
+<li><p>sync.Pool的使用</p>
+<p>  <code>Entry</code>、<code>CheckedEntry</code>、<code>Buffer</code>等中间对象都通过内存池缓存来减少gc开销</p>
+</li>
+<li><p>预分配<strong>1k</strong>的buffer</p>
+<p>  zap默认分配<strong>1k</strong>大小的buffer，避免因为容量不足而扩容。如果应用需要更长的日志，可能需要调整该参数。</p>
+</li>
+<li><p>强类型参数</p>
+<p>  Logger的方法需要传入Field作为上下文信息，Field保存了类型信息，每个对应的类型都实现了编码方法，避免了反射开销。<br>  缺点是调用的时候需要调用辅助函数来构造Field，略微有点不方便。</p>
+</li>
+<li><p>自定义编码器</p>
+<p>  zap定义了可接受的类型以及对应的json编码实现，通过处理每种类型对应的编码来避免反射开销。</p>
+</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+      <div id="reward-btn">
+        打赏
+      </div>
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://rivenzoo.github.io/2020/04/10/zap源码阅读/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/03/28/go-code-style-guide/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Go Code Style Guide</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        notify: 'false',
+        verify: 'false',
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2015-2020
+        RivenZoo
+      </li>
+      <li>
+        
+        Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278725971&amp;web_id=1278725971'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Riven的博客"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+      strings: ['日々私たちが过ごしている日常は、実は、奇迹の连続なのかもしれな', '想要的都拥有，得不到的都释怀', '虽不能至，心向往之'],
+      startDelay: 0,
+      typeSpeed: 200,
+      loop: true,
+      backSpeed: 100,
+      showCursor: true
+    });
+  } catch (err) {
+  }
+
+</script>
+
+
+
+<script src="/js/tocbot.min.js"></script>
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+<script src="/dist/main.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+
+    
+  </div>
+</body>
+
+</html>
