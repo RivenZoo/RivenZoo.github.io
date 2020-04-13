@@ -206,7 +206,7 @@
 <p>  zap实现了输出到文件(stdout/stderr)，更高级的功能例如rotation需要自定义WriteSyncer实现然后用它来创建core</p>
 </li>
 </ul>
-<h3 id="日志扩展"><a href="#日志扩展" class="headerlink" title="日志扩展"></a>日志扩展</h3><p>Logger对象保存的core接口可以对应多种实现，zap内部扩展功能例如Hook、sampler都是通过保存上一个core形成一个新的代理对象，通过重写<code>Check</code>/<code>Write</code>方法来实现自己的逻辑。<br>zap提供了工具函数来包装一个core</p>
+<h3 id="日志扩展"><a href="#日志扩展" class="headerlink" title="日志扩展"></a>日志扩展</h3><p>Logger对象保存的core接口可以对应多种实现，zap内部扩展功能例如Hook、sampler都是通过保存上一个core形成一个责任链，通过重写<code>Check</code>/<code>Write</code>方法来实现自己的逻辑。<br>zap提供了工具函数来包装一个core</p>
 <figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">WrapCore</span><span class="params">(f func(zapcore.Core)</span> <span class="title">zapcore</span>.<span class="title">Core</span>) 	<span class="title">Option</span> &#123;</span></span><br><span class="line">	<span class="keyword">return</span> optionFunc(<span class="function"><span class="keyword">func</span><span class="params">(log *Logger)</span> &#123;</span></span><br><span class="line">		<span class="built_in">log</span>.core = f(<span class="built_in">log</span>.core)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>hook在Write方法中调用注册的函数</p>
