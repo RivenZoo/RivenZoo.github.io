@@ -72,6 +72,173 @@
     
     
     
+    <article id="post-Gin-web框架" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/05/06/Gin-web框架/"
+    >Gin web框架</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/05/06/Gin-web框架/" class="article-date">
+  <time datetime="2020-05-06T14:18:48.000Z" itemprop="datePublished">2020-05-06</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>gin是一个基于Golang标准库<code>net/http</code>封装的HTTPweb框架。<br>它提供了方便的路由注册功能，支持捕获URL参数，提供了中间件机制来串连请求处理流程，提供了方便的数据获取和输出方法，所有这些功能提升了开发web服务的效率。<br>本文将从以下六个方面介绍gin的实现。</p>
+<h2 id="Engine"><a href="#Engine" class="headerlink" title="Engine"></a>Engine</h2><p>基于Golang标准库<code>net/http</code>的web服务都需要实现<code>http.Handler</code>接口，而<code>Engine</code>就是gin实现该接口的类，它同时也实现了注册路由、run服务等方法。<br><code>ServeHTTP</code>是HTTP请求的入口，而主要逻辑在<code>handleHTTPRequest</code>方法中实现。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 标准库HTTP接口</span></span><br><span class="line"><span class="keyword">type</span> Handler <span class="keyword">interface</span> &#123;</span><br><span class="line">	ServeHTTP(ResponseWriter, *Request)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 接口实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(engine *Engine)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(engine *Engine)</span> <span class="title">handleHTTPRequest</span><span class="params">(c *Context)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>以下是几个比较重要的成员。<br>RouterGroup是路由注册的类，收集路由信息和对应的HandlerChain，实际注册还是调用的<code>Engine.addRoute</code>方法。<br><code>trees</code>是底层组织路由的结构。<br><code>pool</code>是分配<code>gin.Context</code>的池，优化内存分配。<br>Render用于数据渲染。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Engine <span class="keyword">struct</span> &#123;</span><br><span class="line">	RouterGroup <span class="comment">// 路由，engine作为根路由</span></span><br><span class="line"></span><br><span class="line">	pool        sync.Pool <span class="comment">// context池</span></span><br><span class="line">	trees       methodTrees <span class="comment">// 路由</span></span><br><span class="line"></span><br><span class="line">	HTMLRender       render.HTMLRender <span class="comment">// 渲染数据</span></span><br><span class="line">	FuncMap          template.FuncMap  <span class="comment">// 渲染数据</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h2><p>gin定义了两个接口来处理路由信息<br><code>IRoutes</code>包含设置中间件、设置HTTP处理函数以及静态文件等方法，应用程序通过它来注册应用的路由处理逻辑。<br><code>IRouter</code>继承了<code>IRoutes</code>，另外添加了一个<code>Group</code>方法来按URL路径层次组织router。</p>
+<p>RouterGroup实现了<code>IRouter</code>接口，字段包含路径以及请求处理链，保存了Engine的指针，注册路由是通过调用<code>engine.addRoute</code>实现的。</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">RouterGroup</span> struct &#123;</span><br><span class="line">	<span class="type">Handlers</span> <span class="type">HandlersChain</span> // 处理链</span><br><span class="line">	basePath string</span><br><span class="line">	engine   *<span class="type">Engine</span></span><br><span class="line">	root     bool // 如果是根，那么返回的<span class="type">IRoutes</span>接口对象为engine；否则返回自身</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>addRoute方法根据不同HTTP method获取路由的根节点，然后按路径加入到基数树中。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">func</span> (<span class="selector-tag">engine</span> *<span class="selector-tag">Engine</span>) <span class="selector-tag">addRoute</span>(<span class="selector-tag">method</span>, <span class="selector-tag">path</span> <span class="selector-tag">string</span>, <span class="selector-tag">handlers</span> <span class="selector-tag">HandlersChain</span>) &#123;</span><br><span class="line">	<span class="attribute">root </span>:= engine.trees.<span class="built_in">get</span>(method)</span><br><span class="line">	if root == nil &#123;</span><br><span class="line">		root = <span class="built_in">new</span>(node)</span><br><span class="line">		root.fullPath = <span class="string">"/"</span></span><br><span class="line">		engine.trees = <span class="built_in">append</span>(engine.trees, methodTree&#123;method: method, root: root&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="selector-tag">root</span><span class="selector-class">.addRoute</span>(<span class="selector-tag">path</span>, <span class="selector-tag">handlers</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+      <a class="article-more-link" href="/2020/05/06/Gin-web框架/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-Golang-failpoint工具" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2020/04/25/Golang-failpoint工具/"
+    >Golang failpoint工具</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/04/25/Golang-failpoint工具/" class="article-date">
+  <time datetime="2020-04-25T06:34:46.000Z" itemprop="datePublished">2020-04-25</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p><a href="https://github.com/pingcap/failpoint" target="_blank" rel="noopener">failpoint</a>是用于测试时注入错误的工具。<br>来源是BSD系统的failpoint功能，已有的go语言实现有etcd的gofail。</p>
+<p>它与gofail的区别是用标记函数代替了注释，标记函数的好处在于IDE可以识别并且编译时可以进行语法检查。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>注入错误</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/pingcap/failpoint"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    failpoint.Inject(<span class="string">"testPanic"</span>, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">"failpoint triggerd"</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>打开错误<code>failpoint-ctl enable</code><br>关闭<code>failpoint-ctl disable</code></p>
+<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p>enable和disable命令对应code目录下面的两个功能模块</p>
+<ul>
+<li>rewriter</li>
+<li>restorer</li>
+</ul>
+      
+      <a class="article-more-link" href="/2020/04/25/Golang-failpoint工具/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-领域驱动开发-摘要" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -94,6 +261,10 @@
   <time datetime="2020-04-11T07:22:56.000Z" itemprop="datePublished">2020-04-11</time>
 </a>
       
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/软件设计/">软件设计</a>
+  </div>
+
       
       
       
@@ -131,6 +302,8 @@
     <footer class="article-footer">
       
       
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DDD/">DDD</a></li></ul>
+
 
     </footer>
 
@@ -335,267 +508,6 @@
       
       <a class="article-more-link" href="/2020/03/28/go-code-style-guide/">阅读更多...</a>
       
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-LVS-notes" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2019/04/06/LVS-notes/"
-    >LVS notes</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2019/04/06/LVS-notes/" class="article-date">
-  <time datetime="2019-04-06T08:06:35.000Z" itemprop="datePublished">2019-04-06</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a> / <a class="article-category-link" href="/categories/Linux/Network/">Network</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <h3 id="LVS-Linux-Virtual-Server"><a href="#LVS-Linux-Virtual-Server" class="headerlink" title="LVS (Linux Virtual Server)"></a>LVS (Linux Virtual Server)</h3><p>它是一种集群(Cluster)技术，采用IP负载均衡技术</p>
-<p><img src="/images/15545381191583.jpg" alt=""></p>
-<h4 id="主要组成部分"><a href="#主要组成部分" class="headerlink" title="主要组成部分"></a>主要组成部分</h4><p>负载调度器(load balancer/ Director)<br>服务器池(server pool/ Realserver)<br>共享存储(shared storage)</p>
-<h4 id="负载均衡方式"><a href="#负载均衡方式" class="headerlink" title="负载均衡方式"></a>负载均衡方式</h4><ul>
-<li><p>Virtual Server via Network Address Translation NAT(VS/NAT) </p>
-<p>  NAT修改请求的目的VIP和端口为选出来的后端服务器的IP和端口，发送给真实处理的服务器<br>  服务器处理完成，通过设置默认网关为VIP，返回结果给调度器<br>  调度器修改结果的源IP和端口为VIP和端口，然后返回给客户端<br>  in/out的流量都要经过调度器<br>  当集群规模变大，调度器可能成为瓶颈</p>
-</li>
-<li><p>Virtual Server via IP Tunneling(VS/TUN)</p>
-<p>  调度器对请求的IP报文进行封装，外层为真实服务器IP<br>  真实服务器收到包后进行解封，获得目的地址为VIP的包，通过设置隧道设备为VIP让内核处理这个包<br>  处理完直接返回给客户端，因为目的地址是VIP，返回的源地址也是VIP<br>  调度器转发的端口和后端服务器的端口需要一致，调度器需要维护连接状态<br>  <img src="/images/15545381400249.jpg" alt=""></p>
-<p>  建立tunnel对IP报文封包转发，返回报文直接发送给用户<br>  需要内核支持IP-tunnel协议，性能较高</p>
-</li>
-<li><p>Virtual Server via Direct Routing(VS/DR)</p>
-<p>  <img src="/images/15545381565629.jpg" alt=""></p>
-</li>
-</ul>
-<pre><code>修改报文Mac地址路由给real-server，真实服务器配置一个非ARP设备的IP为VIP来接收并处理请求
-返回报文直接发送给用户
-调度器转发的端口和后端服务器的端口需要一致，调度器需要维护连接状态
-需要real-server有一块网卡和调度器连接在同一网段，性能高</code></pre><h5 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h5><table>
-<thead>
-<tr>
-<th>_</th>
-<th>VS/NAT</th>
-<th>VS/TUN</th>
-<th>VS/DR</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Server</td>
-<td>any</td>
-<td>Tunneling</td>
-<td>Non-arp device</td>
-</tr>
-<tr>
-<td>server network</td>
-<td>private</td>
-<td>LAN/WAN</td>
-<td>LAN</td>
-</tr>
-<tr>
-<td>server number</td>
-<td>low (10~20)</td>
-<td>High (100)</td>
-<td>High (100)</td>
-</tr>
-<tr>
-<td>server gateway</td>
-<td>load balancer</td>
-<td>own router</td>
-<td>Own router</td>
-</tr>
-</tbody></table>
-<h4 id="负载均衡调度算法"><a href="#负载均衡调度算法" class="headerlink" title="负载均衡调度算法"></a>负载均衡调度算法</h4><ul>
-<li>最少的连接方式(Least Connection)</li>
-<li>最快模式(Fastest)</li>
-<li>观察模式(Observed)</li>
-<li>预测模式(Predictive)</li>
-<li>动态性能分配(Dynamic Ratio-APM)</li>
-<li>动态服务器补充(Dynamic Server Act.)</li>
-<li>服务质量(QoS)</li>
-<li>服务类型(ToS)</li>
-<li>规则模式</li>
-</ul>
-<h4 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h4><p>主备模式<br>ARP欺骗切换IP<br>多线路存活探测<br>高效状态同步</p>
-<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a href="http://www.linuxvirtualserver.org/zh/lvs3.html" target="_blank" rel="noopener">http://www.linuxvirtualserver.org/zh/lvs3.html</a></p>
-
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/LVS/">LVS</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-Golang-Channel小结" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2018/10/17/Golang-Channel小结/"
-    >Golang Channel小结</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2018/10/17/Golang-Channel小结/" class="article-date">
-  <time datetime="2018-10-16T16:20:16.000Z" itemprop="datePublished">2018-10-17</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <h4 id="确保接收"><a href="#确保接收" class="headerlink" title="确保接收"></a>确保接收</h4><figure class="highlight basic"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">01 </span>go func() &#123;</span><br><span class="line"><span class="symbol">02 </span>    p := &lt;-ch // Receive</span><br><span class="line"><span class="symbol">03 </span>&#125;()</span><br><span class="line"><span class="number">04</span></span><br><span class="line"><span class="symbol">05 </span>ch &lt;- <span class="string">"paper"</span> // Send</span><br></pre></td></tr></table></figure>
-
-<p>以上代码，当05行发送之后，不同的channel接收者的行为不同。</p>
-<p>channel类型：</p>
-<ul>
-<li><p>Buffered</p>
-<p>  确保接收之后发送的代码才继续执行</p>
-</li>
-<li><p>Unbuffered</p>
-<p>  发送代码继续执行，不确保此时被接收</p>
-</li>
-</ul>
-<h4 id="状态和行为"><a href="#状态和行为" class="headerlink" title="状态和行为"></a>状态和行为</h4><p>状态：</p>
-<ul>
-<li>nil</li>
-</ul>
-<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// ** nil channel</span><br><span class="line">// A channel is <span class="keyword">in</span> a nil <span class="keyword">state</span> when it is declared <span class="keyword">to</span> its zero value</span><br><span class="line">var ch chan string</span><br><span class="line">	</span><br><span class="line">// A channel can be placed <span class="keyword">in</span> a nil <span class="keyword">state</span> by explicitly setting it <span class="keyword">to</span> nil.</span><br><span class="line">ch = nil</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>open </li>
-</ul>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ** open channel</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// A channel is in a open state when it’s made using the built-in function make.</span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">string</span>)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>closed</li>
-</ul>
-<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">// ** closed channel</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">//</span> A channel <span class="keyword">is</span> <span class="keyword">in</span> a closed state <span class="keyword">when</span> <span class="literal">it</span>’s closed using the built-<span class="keyword">in</span> <span class="keyword">function</span> close.</span><br><span class="line">close(ch)</span><br></pre></td></tr></table></figure>
-
-<p>行为：</p>
-<table>
-<thead>
-<tr>
-<th>操作\状态</th>
-<th>Nil</th>
-<th>Open</th>
-<th>Closed</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Send</td>
-<td>Blocked</td>
-<td>Allowed</td>
-<td>Panic</td>
-</tr>
-<tr>
-<td>Receive</td>
-<td>Blocked</td>
-<td>Allowed</td>
-<td>Allowed</td>
-</tr>
-<tr>
-<td>Close</td>
-<td>Panic</td>
-<td>Allowed</td>
-<td>Panic</td>
-</tr>
-</tbody></table>
-<h4 id="reference"><a href="#reference" class="headerlink" title="reference"></a>reference</h4><p><a href="https://www.ardanlabs.com/blog/2017/10/the-behavior-of-channels.html" target="_blank" rel="noopener">https://www.ardanlabs.com/blog/2017/10/the-behavior-of-channels.html</a></p>
-
       
       <!-- reward -->
       

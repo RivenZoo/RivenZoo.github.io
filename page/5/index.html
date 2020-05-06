@@ -72,6 +72,159 @@
     
     
     
+    <article id="post-notes-about-kafka" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2014/09/21/notes-about-kafka/"
+    >Notes About Kafka</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2014/09/21/notes-about-kafka/" class="article-date">
+  <time datetime="2014-09-20T16:08:00.000Z" itemprop="datePublished">2014-09-21</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a> / <a class="article-category-link" href="/categories/Linux/消息中间件/">消息中间件</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h5 id="consumer-offset-commit"><a href="#consumer-offset-commit" class="headerlink" title="consumer offset commit"></a>consumer offset commit</h5><p>使用kafka的python api时遇到了offset回滚的问题，因为最初使用了autocommit参数，发现有时会重复取记录，发现autocommit是批量提交，并且有offset回滚的问题，具体原因未发现，解决方法是手动调用commit函数提交，经过测试手动调用没有出现offset回滚的问题。</p>
+<h5 id="partition"><a href="#partition" class="headerlink" title="partition"></a>partition</h5><p>一开始为了简单只使用了一个分区，consumer都从一个leader取数据，请求压力都在一台机器。使用不同分区策略可以分散topic的leader，还可以灵活处理不同数据。</p>
+<h5 id="fetch-msg"><a href="#fetch-msg" class="headerlink" title="fetch msg"></a>fetch msg</h5><p>MaxWaitTime 请求最大等待时间，MinBytes 请求消息的最小字节数，通过这2个参数可以调整你获取数据时的等待策略，最简单的做法就是不等待，没数据直接返回。</p>
+<h5 id="zookeeper"><a href="#zookeeper" class="headerlink" title="zookeeper"></a>zookeeper</h5><p>由于硬盘限制，把kafka和zookeeper的日志目录放在了同一个磁盘，而且磁盘的性能不是很好，造成了kafka写数据效率低下，每次写数据只有几百k。zookeeper网站上对这2个配置有Notes说不要把他们放在繁忙的磁盘设备上，会影响其他程序写磁盘的性能，最好这2个目录都分开存放不同设备。简单看了一下，dataDir下存的是snapshot文件，dataLogDir存的是log文件，应该是zookeeper把内存数据持久化到这2种文件中了，而且持久化操作很频繁且写的数据很少，会影响kafka写日志。</p>
+<h5 id="磁盘参数"><a href="#磁盘参数" class="headerlink" title="磁盘参数"></a>磁盘参数</h5><p>在排查磁盘io高的问题时用到了<code>iostat -d -x</code>命令，在排查时主要关注w/s、wkB/s、rkB/s，对于扇区没怎么关注，rsec/s wsec/s avgrq-sz这几个参数反应磁盘操作扇区的情况，当磁盘利用率高且iowait高，而平均扇区低也就意味着磁盘把大量时间用于磁盘寻道，你可能需要考虑是不是有大量随机写磁盘的操作。</p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Kafka/">Kafka</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Zookeeper/">Zookeeper</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
+    <article id="post-about-thread-safe" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2013/11/22/about-thread-safe/"
+    >重入与线程安全</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2013/11/22/about-thread-safe/" class="article-date">
+  <time datetime="2013-11-21T16:13:44.000Z" itemprop="datePublished">2013-11-22</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>在stackoverflow上看的的关于可重入与线程安全的区别：</p>
+<blockquote>
+<p>These functions are not reentrant. They are thread-safe. There’s a big difference. Functions that are reentrant are automatically thread-safe, but thread-safe functions can still deadlock (or worse) if called again from the same thread they’re already running in (for example from a signal handler).</p>
+</blockquote>
+<p>函数可重入很自然会觉得该函数是线程安全的，既然能被其他流程中断并可调用自身也就可以被多个线程同时调用。但是线程安全是不是可重入有点模糊，上面说了一种情况，当重复调用一个线程安全的函数，并且函数中有锁就有可能发生死锁，表明线程安全不一定可重入。看来重入的要求比线程安全要更严格一点。</p>
+<p>附带查了查关于Posix的标准io操作，Posix标准要求操作字符流的函数实现为可重入，但是各个实现为了性能方面的考虑都没有实现为可重入的，这些函数有潜在不安全。但是又说明：</p>
+<blockquote>
+<p>all standard I/O functions that reference character streams shall behave as if they use flockfile() and funlockfile() internally to obtain ownership of the character streams</p>
+</blockquote>
+<p>表明它们应该是线程安全的。</p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-define-linux-signal" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 

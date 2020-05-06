@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-CN" >
+
+
+<head>
+  <meta charset="utf-8" />
+    
+  <meta name="description" content="Tech,Idea,Funny,Daily" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Gin web框架 |  Riven的博客
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  <link rel="stylesheet" href="/dist/main.css">
+  
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content on">
+      <section class="outer">
+  <article id="post-Gin-web框架" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Gin web框架
+</h1>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/05/06/Gin-web框架/" class="article-date">
+  <time datetime="2020-05-06T14:18:48.000Z" itemprop="datePublished">2020-05-06</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">1.8k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">7分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>gin是一个基于Golang标准库<code>net/http</code>封装的HTTPweb框架。<br>它提供了方便的路由注册功能，支持捕获URL参数，提供了中间件机制来串连请求处理流程，提供了方便的数据获取和输出方法，所有这些功能提升了开发web服务的效率。<br>本文将从以下六个方面介绍gin的实现。</p>
+<h2 id="Engine"><a href="#Engine" class="headerlink" title="Engine"></a>Engine</h2><p>基于Golang标准库<code>net/http</code>的web服务都需要实现<code>http.Handler</code>接口，而<code>Engine</code>就是gin实现该接口的类，它同时也实现了注册路由、run服务等方法。<br><code>ServeHTTP</code>是HTTP请求的入口，而主要逻辑在<code>handleHTTPRequest</code>方法中实现。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 标准库HTTP接口</span></span><br><span class="line"><span class="keyword">type</span> Handler <span class="keyword">interface</span> &#123;</span><br><span class="line">	ServeHTTP(ResponseWriter, *Request)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 接口实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(engine *Engine)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(engine *Engine)</span> <span class="title">handleHTTPRequest</span><span class="params">(c *Context)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>以下是几个比较重要的成员。<br>RouterGroup是路由注册的类，收集路由信息和对应的HandlerChain，实际注册还是调用的<code>Engine.addRoute</code>方法。<br><code>trees</code>是底层组织路由的结构。<br><code>pool</code>是分配<code>gin.Context</code>的池，优化内存分配。<br>Render用于数据渲染。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Engine <span class="keyword">struct</span> &#123;</span><br><span class="line">	RouterGroup <span class="comment">// 路由，engine作为根路由</span></span><br><span class="line"></span><br><span class="line">	pool        sync.Pool <span class="comment">// context池</span></span><br><span class="line">	trees       methodTrees <span class="comment">// 路由</span></span><br><span class="line"></span><br><span class="line">	HTMLRender       render.HTMLRender <span class="comment">// 渲染数据</span></span><br><span class="line">	FuncMap          template.FuncMap  <span class="comment">// 渲染数据</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h2><p>gin定义了两个接口来处理路由信息<br><code>IRoutes</code>包含设置中间件、设置HTTP处理函数以及静态文件等方法，应用程序通过它来注册应用的路由处理逻辑。<br><code>IRouter</code>继承了<code>IRoutes</code>，另外添加了一个<code>Group</code>方法来按URL路径层次组织router。</p>
+<p>RouterGroup实现了<code>IRouter</code>接口，字段包含路径以及请求处理链，保存了Engine的指针，注册路由是通过调用<code>engine.addRoute</code>实现的。</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">RouterGroup</span> struct &#123;</span><br><span class="line">	<span class="type">Handlers</span> <span class="type">HandlersChain</span> // 处理链</span><br><span class="line">	basePath string</span><br><span class="line">	engine   *<span class="type">Engine</span></span><br><span class="line">	root     bool // 如果是根，那么返回的<span class="type">IRoutes</span>接口对象为engine；否则返回自身</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>addRoute方法根据不同HTTP method获取路由的根节点，然后按路径加入到基数树中。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">func</span> (<span class="selector-tag">engine</span> *<span class="selector-tag">Engine</span>) <span class="selector-tag">addRoute</span>(<span class="selector-tag">method</span>, <span class="selector-tag">path</span> <span class="selector-tag">string</span>, <span class="selector-tag">handlers</span> <span class="selector-tag">HandlersChain</span>) &#123;</span><br><span class="line">	<span class="attribute">root </span>:= engine.trees.<span class="built_in">get</span>(method)</span><br><span class="line">	if root == nil &#123;</span><br><span class="line">		root = <span class="built_in">new</span>(node)</span><br><span class="line">		root.fullPath = <span class="string">"/"</span></span><br><span class="line">		engine.trees = <span class="built_in">append</span>(engine.trees, methodTree&#123;method: method, root: root&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="selector-tag">root</span><span class="selector-class">.addRoute</span>(<span class="selector-tag">path</span>, <span class="selector-tag">handlers</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>trees类型定义</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 路由组织成一个森林，不同HTTP的方法代表一颗路径树</span></span><br><span class="line"><span class="comment">// HTTP只有9个方法，所有使用数组保存</span></span><br><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">methodTrees</span> []<span class="title">methodTree</span></span></span><br></pre></td></tr></table></figure>
+
+<p>gin的路由实现似乎参考了httprouter这个项目，代码有点复杂先略过。<br>每个路由包含一个请求处理链<code>Handlers HandlersChain</code>。</p>
+<p>HandlersChain定义为处理函数切片，处理函数只接收<code>*Context</code>参数，所有的请求响应需要的字段、以及处理流程控制变量都包含在<code>Context</code>结构体中。</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// HandlerFunc defines the handler used by gin middleware as return value.</span></span><br><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">HandlerFunc</span> <span class="title">func</span></span>(*Context)</span><br><span class="line"></span><br><span class="line"><span class="comment">// HandlersChain defines a HandlerFunc array.</span></span><br><span class="line"><span class="class"><span class="keyword">type</span> <span class="title">HandlersChain</span> []<span class="title">HandlerFunc</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h3><p>请求中间件和处理函数是同一个类型<code>HandlerFunc</code>。<br>分为全局中间件和针对某个URL的中间件。<code>Engine.Use</code>设置全局中间件。</p>
+<p><code>func (engine *Engine) Use(middleware ...HandlerFunc) IRoutes</code></p>
+<p><code>RouterGroup.Use</code>设置当前路由的中间件。</p>
+<p><code>func (group *RouterGroup) Use(middleware ...HandlerFunc) IRoutes</code></p>
+<p>gin提供了以下中间件，开发自定义中间件可以参考它们。</p>
+<ul>
+<li>HTTP验证 <code>BasicAuth</code>等</li>
+<li>日志 <code>Logger</code>等</li>
+<li>捕获panic <code>Recovery</code></li>
+</ul>
+<h2 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h2><p>Context对象由<code>Engine.pool</code>分配，请求处理完又放回了池中。<br>主要字段包含请求、响应对象，捕获的参数，处理链，用来控制处理流程的索引，kv值存储等。<br>它实现了标准库<code>context.Context</code>接口，但是内部没有实现<code>Deadline</code>方法。请求的超时context在Request对象中，可以通过<code>c.Request.Context()</code>获取。</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">Context</span> struct &#123;</span><br><span class="line">	writermem responseWriter // <span class="type">HTTP</span> writer的包装对象</span><br><span class="line">	<span class="type">Request</span>   *http.<span class="type">Request</span>  // 请求对象</span><br><span class="line">	<span class="type">Writer</span>    <span class="type">ResponseWriter</span> // 指向writermem</span><br><span class="line"></span><br><span class="line">	<span class="type">Params</span>   <span class="type">Params</span> // url参数</span><br><span class="line">	handlers <span class="type">HandlersChain</span> // 处理链，最多63个处理函数</span><br><span class="line">	index    int8 // handlers的索引，控制handlers调用。reset函数初始化为-1</span><br><span class="line">	fullPath string // 请求路径</span><br><span class="line"></span><br><span class="line">	engine *<span class="type">Engine</span></span><br><span class="line">	</span><br><span class="line">	// <span class="type">This</span> mutex protect <span class="type">Keys</span> map</span><br><span class="line">	<span class="type">KeysMutex</span> *sync.<span class="type">RWMutex</span></span><br><span class="line"></span><br><span class="line">	// <span class="type">Keys</span> is a key/value pair exclusively for the context of each request.</span><br><span class="line">	<span class="type">Keys</span> map[string]interface&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>处理控制逻辑由<code>Next</code>和<code>Abort</code>两个函数实现。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Next可以在处理函数内部调用，相当于直接调用下一个处理函数，调用层级+1</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(<span class="built_in">c</span> *Context)</span></span> <span class="type">Next</span>() &#123;</span><br><span class="line">	<span class="built_in">c</span>.index++ <span class="comment">// 初始化为-1，从0开始执行</span></span><br><span class="line">	<span class="keyword">for</span> <span class="built_in">c</span>.index &lt; int8(len(<span class="built_in">c</span>.handlers)) &#123;</span><br><span class="line">		<span class="built_in">c</span>.handlers[<span class="built_in">c</span>.index](<span class="built_in">c</span>) <span class="comment">// 调用当前函数</span></span><br><span class="line">		<span class="built_in">c</span>.index++ <span class="comment">// 移动到下一个函数</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Abort终止所有后续的函数</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(<span class="built_in">c</span> *Context)</span></span> <span class="type">Abort</span>() &#123;</span><br><span class="line">	<span class="built_in">c</span>.index = abortIndex</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他API包括以下几类</p>
+<ul>
+<li>读请求参数，如<code>Param</code>,<code>Query</code>等</li>
+<li>读写kv数据，如<code>Get</code>,<code>Set</code>等</li>
+<li>解析请求数据，如带<code>Bind</code>的方法</li>
+<li>渲染数据，写响应，如<code>JSON</code>,<code>Data</code>,<code>Render</code>等</li>
+</ul>
+<h2 id="数据输入"><a href="#数据输入" class="headerlink" title="数据输入"></a>数据输入</h2><p>gin提供了binding接口来解码请求数据，接口和实现定义在binding目录下面。<br>为了方便，在Context上实现了许多数据格式解码的帮助函数，包括json、yaml、xml、protobuf等</p>
+<p>最基础的是<code>Binding</code>接口，它定义了从request读数据并且解码的接口<br><code>BindingBody</code>定义了从body读数据的接口<br><code>BindingUri</code>定义了从URL读数据的接口</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Binding <span class="keyword">interface</span> &#123;</span><br><span class="line">	Name() <span class="built_in">string</span></span><br><span class="line">	Bind(*http.Request, <span class="keyword">interface</span>&#123;&#125;) error</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">type</span> BindingBody <span class="keyword">interface</span> &#123;</span><br><span class="line">	Binding</span><br><span class="line">	BindBody([]byte, <span class="keyword">interface</span>&#123;&#125;) error</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// BindingUri adds BindUri method to Binding. BindUri is similar with Bind,</span></span><br><span class="line"><span class="comment">// but it read the Params.</span></span><br><span class="line"><span class="keyword">type</span> BindingUri <span class="keyword">interface</span> &#123;</span><br><span class="line">	Name() <span class="built_in">string</span></span><br><span class="line">	BindUri(map[<span class="built_in">string</span>][]<span class="built_in">string</span>, <span class="keyword">interface</span>&#123;&#125;) error</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Context的帮助函数</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(<span class="built_in">c</span> *Context)</span></span> <span class="type">ShouldBindJSON</span>(obj interface&#123;&#125;) error <span class="comment">// 不设置状态码</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(<span class="built_in">c</span> *Context)</span></span> <span class="type">BindUri</span>(obj interface&#123;&#125;) error <span class="comment">// 错误设置400</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="数据输出"><a href="#数据输出" class="headerlink" title="数据输出"></a>数据输出</h2><p>Context数据渲染方法</p>
+<p><code>func (c *Context) Render(code int, r render.Render)</code></p>
+<p>Render接口定义在render目录下，包括各种常用格式，如json、jsonp、HTML、protobuf等</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">Render</span> interface &#123;</span><br><span class="line">	// <span class="type">Render</span> writes data with custom <span class="type">ContentType</span>.</span><br><span class="line">	<span class="type">Render</span>(http.<span class="type">ResponseWriter</span>) error</span><br><span class="line">	// <span class="type">WriteContentType</span> writes custom <span class="type">ContentType</span>.</span><br><span class="line">	<span class="type">WriteContentType</span>(w http.<span class="type">ResponseWriter</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Context的帮助函数</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(c *Context)</span> <span class="title">JSONP</span><span class="params">(code <span class="keyword">int</span>, obj <span class="keyword">interface</span>&#123;&#125;)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(c *Context)</span> <span class="title">Data</span><span class="params">(code <span class="keyword">int</span>, contentType <span class="keyword">string</span>, data []<span class="keyword">byte</span>)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>有个小坑需要注意，Render函数内部会panic。如果渲染报错了，直接panic。<br>其他渲染函数都会调用它，所以都有可能panic。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Render writes the response headers and calls render.Render to render data.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(<span class="built_in">c</span> *Context)</span></span> <span class="type">Render</span>(code int, r render.<span class="type">Render</span>) &#123;</span><br><span class="line">	<span class="built_in">c</span>.<span class="type">Status</span>(code)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> !bodyAllowedForStatus(code) &#123;</span><br><span class="line">		r.<span class="type">WriteContentType</span>(<span class="built_in">c</span>.<span class="type">Writer</span>)</span><br><span class="line">		<span class="built_in">c</span>.<span class="type">Writer</span>.<span class="type">WriteHeaderNow</span>()</span><br><span class="line">		<span class="keyword">return</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> err := r.<span class="type">Render</span>(<span class="built_in">c</span>.<span class="type">Writer</span>); err != <span class="literal">nil</span> &#123;</span><br><span class="line">		panic(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h2><ul>
+<li>基数树高效组织路由</li>
+<li>sync.pool分配Context</li>
+</ul>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">func</span> (<span class="selector-tag">engine</span> *<span class="selector-tag">Engine</span>) <span class="selector-tag">ServeHTTP</span>(<span class="selector-tag">w</span> <span class="selector-tag">http</span><span class="selector-class">.ResponseWriter</span>, <span class="selector-tag">req</span> *<span class="selector-tag">http</span><span class="selector-class">.Request</span>) &#123;</span><br><span class="line">	<span class="attribute">c </span>:= engine.pool.<span class="built_in">Get</span>().(*Context)</span><br><span class="line">	c.writermem.<span class="built_in">reset</span>(w)</span><br><span class="line">	c.Request = req</span><br><span class="line">	c.<span class="built_in">reset</span>()</span><br><span class="line"></span><br><span class="line">	engine.<span class="built_in">handleHTTPRequest</span>(c)</span><br><span class="line"></span><br><span class="line">	engine.pool.<span class="built_in">Put</span>(c)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>可替换的json库。<br>  在<code>internal/json</code>封装了常用json函数，用<code>// +build jsoniter</code>来替换标准库json。</p>
+</li>
+<li><p>字符串和slice转换优化。<br>  在<code>internal/bytesconv</code>里定义了优化后的转换函数，用了黑魔法避免内存拷贝。</p>
+</li>
+</ul>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// <span class="keyword">StringToBytes </span>converts <span class="keyword">string </span>to <span class="keyword">byte </span>slice without a memory allocation.</span><br><span class="line"><span class="symbol">func</span> <span class="keyword">StringToBytes(s </span><span class="keyword">string) </span>(<span class="keyword">b </span>[]<span class="keyword">byte) </span>&#123;</span><br><span class="line">	sh := *(*reflect.<span class="keyword">StringHeader)(unsafe.Pointer(&amp;s))</span></span><br><span class="line"><span class="keyword">	</span><span class="keyword">bh </span>:= (*reflect.SliceHeader)(unsafe.Pointer(&amp;<span class="keyword">b))</span></span><br><span class="line"><span class="keyword">	</span><span class="keyword">bh.Data, </span><span class="keyword">bh.Len, </span><span class="keyword">bh.Cap </span>= sh<span class="meta">.Data</span>, sh.Len, sh.Len</span><br><span class="line">	return <span class="keyword">b</span></span><br><span class="line"><span class="keyword">&#125;</span></span><br><span class="line"><span class="keyword"></span></span><br><span class="line"><span class="keyword">// </span><span class="keyword">BytesToString </span>converts <span class="keyword">byte </span>slice to <span class="keyword">string </span>without a memory allocation.</span><br><span class="line"><span class="symbol">func</span> <span class="keyword">BytesToString(b </span>[]<span class="keyword">byte) </span><span class="keyword">string </span>&#123;</span><br><span class="line">	return *(*<span class="keyword">string)(unsafe.Pointer(&amp;b))</span></span><br><span class="line"><span class="keyword">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>这里只记录了gin框架的大体架构，涉及到细节的地方大多都略过了。例如HTTP请求处理逻辑、路由trees的匹配算法等，希望以后有时间可以补上。</p>
+
+      
+      <!-- reward -->
+      
+      <div id="reward-btn">
+        打赏
+      </div>
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://rivenzoo.github.io/2020/05/06/Gin-web框架/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/04/25/Golang-failpoint工具/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Golang failpoint工具</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        notify: 'false',
+        verify: 'false',
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2015-2020
+        RivenZoo
+      </li>
+      <li>
+        
+        Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      
+      <li>
+        <!-- cnzz统计 -->
+        
+        <script type="text/javascript" src='https://v1.cnzz.com/z_stat.php?id=1278725971&amp;web_id=1278725971'></script>
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="Riven的博客"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/categories/">分类</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/tags/">标签</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/about">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="搜索">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+      <a class="nav-item-link" target="_blank" href="/atom.xml" title="RSS Feed">
+        <i class="ri-rss-line"></i>
+      </a>
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/lazyload.min.js"></script>
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+      strings: ['日々私たちが过ごしている日常は、実は、奇迹の连続なのかもしれな', '想要的都拥有，得不到的都释怀', '虽不能至，心向往之'],
+      startDelay: 0,
+      typeSpeed: 200,
+      loop: true,
+      backSpeed: 100,
+      showCursor: true
+    });
+  } catch (err) {
+  }
+
+</script>
+
+
+
+<script src="/js/tocbot.min.js"></script>
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+<script src="/dist/main.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+
+    
+  </div>
+</body>
+
+</html>
