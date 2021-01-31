@@ -72,6 +72,75 @@
     
     
     
+    <article id="post-ubuntu-mount-ntfs" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2015/10/10/ubuntu-mount-ntfs/"
+    >Ubuntu Mount NTFS with system boot</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2015/10/10/ubuntu-mount-ntfs/" class="article-date">
+  <time datetime="2015-10-10T03:14:23.000Z" itemprop="datePublished">2015-10-10</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/Linux/">Linux</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ubuntu14.<span class="number">04</span></span><br><span class="line"></span><br><span class="line">$ vim <span class="regexp">/etc/</span>fstab</span><br><span class="line"></span><br><span class="line"><span class="regexp">/dev/</span>sda2 <span class="regexp">/media ntfs auto,user,rw,async,exec 0 0 # 加exec选项才可以执行挂载目录内的程序，相当于 mount -t ntfs /</span>dev<span class="regexp">/sda2 /m</span>edia -o exec</span><br></pre></td></tr></table></figure>
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ubuntu/">Ubuntu</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-go-notes" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -390,92 +459,6 @@
 
 </article>
     
-    <article id="post-c-minint-define" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2015/01/21/c-minint-define/"
-    >C语言INT_MIN定义的问题</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2015/01/21/c-minint-define/" class="article-date">
-  <time datetime="2015-01-20T16:33:54.000Z" itemprop="datePublished">2015-01-21</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>关于c语言INT_MIN定义的问题</p>
-<p>最近看到一段代码</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MAX 2147483647</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MIN (-INT_MAX - 1)</span></span><br></pre></td></tr></table></figure>
-
-<p>INT_MIN的值应该为 -2147483648，为什么不直接定义呢？原因参考<a href="http://www.cnblogs.com/Jack47/archive/2013/01/06/TMin32-in-c.html" target="_blank" rel="noopener">Jack47的blog:C语言中TMin的写法</a>这篇文章。</p>
-<p>个人理解为C语言在处理程序中常量时，符号-和后面的值是分开处理的，先处理字面值，然后将-作为一元运算符。处理字面值的时候会决定这个常量的类型，基本的规则是选能容纳字面值的最小类型。如32位系统，2147483648这个值决定为unsigned int，如果使用<code>#define INT_MIN (-2147483648)</code>这个定义，INT_MIN类型为unsigned int。</p>
-<p>写了一段代码验证</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MAX 2147483647</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MIN (-INT_MAX - 1)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// TMIN is unsigned int</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TMIN (-2147483648)        </span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (i &gt; TMIN) </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d &gt; tmin\n"</span>, i);</span><br><span class="line">    <span class="keyword">else</span>   </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d &lt; tmin\n"</span>, i);</span><br><span class="line">    <span class="keyword">if</span> (i &gt; INT_MIN)</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">"%d &gt;INT_MIN\n"</span>, i);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,<span class="keyword">sizeof</span>(TMIN));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>运行结果为</p>
-<blockquote>
-</blockquote>
-<p>1 &lt; tmin<br>1 &gt;INT_MIN<br>4</p>
-<p>补充：</p>
-<p>CSAPP的补充材料<a href="http://csapp.cs.cmu.edu/public/waside/waside-tmin.pdf" target="_blank" rel="noopener">waside-tmin.pdf</a></p>
-<p>上面的例子说明了不同格式字面值在C90和C99下面的类型确定的规则，C90 32位下类型为unsigned，就会产生上面程序的结果。</p>
-<p>对于这种会产生不同行为的代码最好避免.</p>
-
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
   </article>
   
 
@@ -493,7 +476,7 @@
     <ul class="list-inline">
       <li>
         &copy;
-        2015-2020
+        2015-2021
         RivenZoo
       </li>
       <li>

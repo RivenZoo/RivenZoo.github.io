@@ -72,6 +72,101 @@
     
     
     
+    <article id="post-Cpp-Static-initialization-order-fiasco" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2017/01/20/Cpp-Static-initialization-order-fiasco/"
+    >Cpp Static Initialization Order Fiasco</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2017/01/20/Cpp-Static-initialization-order-fiasco/" class="article-date">
+  <time datetime="2017-01-20T12:08:13.000Z" itemprop="datePublished">2017-01-20</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h3 id="Static-initialization-order-fiasco"><a href="#Static-initialization-order-fiasco" class="headerlink" title="Static initialization order fiasco"></a>Static initialization order fiasco</h3><ul>
+<li><p>Construct On First Use Idiom</p>
+<ul>
+<li><p>If the object does not need to be destructed, uses a static pointer.</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// File x.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Fred.h"</span></span></span><br><span class="line"><span class="function">Fred&amp; <span class="title">x</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">static</span> Fred* ans = <span class="keyword">new</span> Fred();</span><br><span class="line">  <span class="keyword">return</span> *ans;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// File Barney.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="string">"Barney.h"</span></span></span><br><span class="line"><span class="symbol">Barney:</span>:Barney()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  x().goBowling();</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>This approach is that the Fred object is <strong>never destructed</strong>.<br>The Construct On First Use Idiom uses a pointer and intentionally leaks the object.</p>
+</li>
+<li><p>If you need to destruct the object and do not care the order of static objects deinitialization, uses a static object.</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// File x.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Fred.h"</span></span></span><br><span class="line"><span class="function">Fred&amp; <span class="title">x</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">static</span> Fred ans;  <span class="comment">// was static Fred* ans = new Fred();</span></span><br><span class="line">  <span class="keyword">return</span> ans;       <span class="comment">// was return *ans;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  It does not leak the object, but <strong>it does not control the order of static deinitialization</strong>, so it is (very!) unsafe to use the object during static deinitialization, that is, from a destructor of another statically declared object.</p>
+</li>
+</ul>
+</li>
+<li><p>Nifty Counter</p>
+<p>  It is a more complicated solution that solves problems mentioned above.</p>
+  <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Stream.h</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> STREAM_H</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> STREAM_H</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Stream</span> &#123;</span></span><br><span class="line">  Stream ();</span><br><span class="line">  ~Stream ();</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">extern</span> Stream&amp; stream; <span class="comment">// global stream object</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">StreamInitializer</span> &#123;</span></span><br><span class="line">  StreamInitializer ();</span><br><span class="line">  ~StreamInitializer ();</span><br><span class="line">&#125; streamInitializer; <span class="comment">// static initializer for every translation unit</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// STREAM_H</span></span></span><br></pre></td></tr></table></figure>
+
+  <figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Stream.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"Stream.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;new&gt;         // placement new</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;type_traits&gt; // aligned_storage</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> nifty_counter; <span class="comment">// zero initialized at load time</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">typename</span> std::aligned_storage&lt;<span class="keyword">sizeof</span> (<span class="built_in">Stream</span>), <span class="keyword">alignof</span> (<span class="built_in">Stream</span>)&gt;::type</span><br><span class="line">  stream_buf; <span class="comment">// memory for the stream object</span></span><br><span class="line"><span class="built_in">Stream</span>&amp; stream = <span class="keyword">reinterpret_cast</span>&lt;<span class="built_in">Stream</span>&amp;&gt; (stream_buf);</span><br><span class="line"></span><br><span class="line"><span class="built_in">Stream</span>::<span class="built_in">Stream</span> ()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// initialize things</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">Stream</span>::~<span class="built_in">Stream</span> ()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="comment">// clean-up</span></span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">StreamInitializer::StreamInitializer ()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">if</span> (nifty_counter++ == <span class="number">0</span>) <span class="keyword">new</span> (&amp;stream) <span class="built_in">Stream</span> (); <span class="comment">// placement new</span></span><br><span class="line">&#125;</span><br><span class="line">StreamInitializer::~StreamInitializer ()</span><br><span class="line">&#123;</span><br><span class="line">  <span class="built_in">if</span> (--nifty_counter == <span class="number">0</span>) (&amp;stream)-&gt;~<span class="built_in">Stream</span> ();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>  The header file of the Stream class <strong>must be included before any member function can be called on the Stream object</strong>.<br>  An instance of the StreamInitializer class is included in each compilation unit. Any use of the Stream object follows the inclusion of the header, which ensures that the constructor of the initializer object is called before the Stream object is used.</p>
+</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-go-doc-tips" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -454,75 +549,6 @@ ControlPersist 10m</code></pre><p> 上面的配置在第一次建立ssh连接的
 
 </article>
     
-    <article id="post-ubuntu-mount-ntfs" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2015/10/10/ubuntu-mount-ntfs/"
-    >Ubuntu Mount NTFS with system boot</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2015/10/10/ubuntu-mount-ntfs/" class="article-date">
-  <time datetime="2015-10-10T03:14:23.000Z" itemprop="datePublished">2015-10-10</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/Linux/">Linux</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ubuntu14.<span class="number">04</span></span><br><span class="line"></span><br><span class="line">$ vim <span class="regexp">/etc/</span>fstab</span><br><span class="line"></span><br><span class="line"><span class="regexp">/dev/</span>sda2 <span class="regexp">/media ntfs auto,user,rw,async,exec 0 0 # 加exec选项才可以执行挂载目录内的程序，相当于 mount -t ntfs /</span>dev<span class="regexp">/sda2 /m</span>edia -o exec</span><br></pre></td></tr></table></figure>
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NTFS/">NTFS</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ubuntu/">Ubuntu</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
   </article>
   
 
@@ -540,7 +566,7 @@ ControlPersist 10m</code></pre><p> 上面的配置在第一次建立ssh连接的
     <ul class="list-inline">
       <li>
         &copy;
-        2015-2020
+        2015-2021
         RivenZoo
       </li>
       <li>

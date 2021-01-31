@@ -72,6 +72,81 @@
     
     
     
+    <article id="post-大数据工作流组件oozie简介" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/01/31/大数据工作流组件oozie简介/"
+    >大数据工作流组件oozie简介</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/01/31/大数据工作流组件oozie简介/" class="article-date">
+  <time datetime="2021-01-31T05:06:02.000Z" itemprop="datePublished">2021-01-31</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/大数据/">大数据</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>Oozie是一个管理 Apache Hadoop 作业的工作流调度系统。</p>
+<p>Oozie的 workflow jobs 是由 actions 组成的 有向无环图(DAG)。</p>
+<p>Oozie的 coordinator jobs 是由时间 (频率)和数据可用性触发的重复的 workflow jobs 。</p>
+<p>Oozie与Hadoop生态圈的其他部分集成在一起，支持多种类型的Hadoop作业（如Java map-reduce、流式map-reduce、Pig、Hive、Sqoop和Distcp）以及特定于系统的工作（如Java程序和shell脚本），不同作业对应不同的workflow action。</p>
+      
+      <a class="article-more-link" href="/2021/01/31/大数据工作流组件oozie简介/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oozie/">oozie</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-Gin-web框架" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -441,101 +516,6 @@
 
 </article>
     
-    <article id="post-go-code-style-guide" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/03/28/go-code-style-guide/"
-    >Go Code Style Guide</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/03/28/go-code-style-guide/" class="article-date">
-  <time datetime="2020-03-28T09:18:47.000Z" itemprop="datePublished">2020-03-28</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <h2 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h2><h3 id="包名"><a href="#包名" class="headerlink" title="包名"></a>包名</h3><p>当命名包时，请遵守下面规则：</p>
-<ul>
-<li>全部小写。没有大写或下划线。</li>
-<li>简短而简洁。请记住，在每个使用的地方都完整标识了该名称。</li>
-<li>不建议使用“common”，“util”，“shared”或“lib”。这些是信息量不足的名称。</li>
-</ul>
-<p>BAD</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">kv_log</span><br><span class="line">rateLimit</span><br></pre></td></tr></table></figure>
-
-<p>GOOD</p>
-<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">kvlog</span></span><br><span class="line"><span class="attribute">ratelimit</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="函数、变量名"><a href="#函数、变量名" class="headerlink" title="函数、变量名"></a>函数、变量名</h3><p>遵循 Go 社区关于使用 MixedCaps 作为函数名 的约定。使用单词首字母大小写命名，作用域越大的名称越详细，名字不包含下划线。<br>有一个例外，为了对相关的测试用例进行分组，函数名可能包含下划线，如：TestMyFunction_WhatIsBeingTested.<br>函数名字使用动词加名词的形式，避免使用<code>v1/v2</code>这类后缀.</p>
-<p>BAD</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> global_variable <span class="keyword">bool</span></span><br><span class="line"><span class="keyword">const</span> MAX_SIZE = <span class="number">10</span></span><br></pre></td></tr></table></figure>
-
-<p>GOOD</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> globalVariable <span class="keyword">bool</span></span><br><span class="line"><span class="keyword">const</span> MaxSize = <span class="number">10</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="时间相关变量命名带上单位。"><a href="#时间相关变量命名带上单位。" class="headerlink" title="时间相关变量命名带上单位。"></a>时间相关变量命名带上单位。</h3><p>BAD</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> expireTime <span class="keyword">int</span></span><br></pre></td></tr></table></figure>
-
-<p>GOOD</p>
-<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> expireMilliSeconds <span class="keyword">int</span></span><br></pre></td></tr></table></figure>
-      
-      <a class="article-more-link" href="/2020/03/28/go-code-style-guide/">阅读更多...</a>
-      
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
   </article>
   
 
@@ -553,7 +533,7 @@
     <ul class="list-inline">
       <li>
         &copy;
-        2015-2020
+        2015-2021
         RivenZoo
       </li>
       <li>

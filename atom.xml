@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://rivenzoo.github.io/"/>
-  <updated>2020-05-06T14:20:21.920Z</updated>
+  <updated>2021-01-31T05:13:03.751Z</updated>
   <id>http://rivenzoo.github.io/</id>
   
   <author>
@@ -15,6 +15,31 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>大数据工作流组件oozie简介</title>
+    <link href="http://rivenzoo.github.io/2021/01/31/%E5%A4%A7%E6%95%B0%E6%8D%AE%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%BB%84%E4%BB%B6oozie%E7%AE%80%E4%BB%8B/"/>
+    <id>http://rivenzoo.github.io/2021/01/31/大数据工作流组件oozie简介/</id>
+    <published>2021-01-31T05:06:02.000Z</published>
+    <updated>2021-01-31T05:13:03.751Z</updated>
+    
+    <content type="html"><![CDATA[<p>Oozie是一个管理 Apache Hadoop 作业的工作流调度系统。</p><p>Oozie的 workflow jobs 是由 actions 组成的 有向无环图(DAG)。</p><p>Oozie的 coordinator jobs 是由时间 (频率)和数据可用性触发的重复的 workflow jobs 。</p><p>Oozie与Hadoop生态圈的其他部分集成在一起，支持多种类型的Hadoop作业（如Java map-reduce、流式map-reduce、Pig、Hive、Sqoop和Distcp）以及特定于系统的工作（如Java程序和shell脚本），不同作业对应不同的workflow action。</p><a id="more"></a><h2 id="主要概念"><a href="#主要概念" class="headerlink" title="主要概念"></a>主要概念</h2><p>Workflow：工作流，由我们需要处理的每个工作组成。</p><p>Coordinator：协调器，根据条件触发工作流执行，支持周期触发和检测数据是否准备好。</p><p>Bundle：将一堆的coordinator进行汇总处理。</p><h3 id="组件图"><a href="#组件图" class="headerlink" title="组件图"></a>组件图</h3><p><img src="images/16120697407602.jpg" alt=""></p><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>job的组成</p><ul><li>job.properties 记录了job的属性</li><li>workflow.xml 使用hPDL 定义任务的流程和分支</li><li>lib目录 用来执行具体的任务</li><li>coordinator.xml 定义调度策略</li></ul><h3 id="job-properties"><a href="#job-properties" class="headerlink" title="job.properties"></a>job.properties</h3><table><thead><tr><th>KEY</th><th>含义</th></tr></thead><tbody><tr><td>nameNode</td><td>HDFS地址</td></tr><tr><td>jobTracker</td><td>jobTracker（ResourceManager）地址</td></tr><tr><td>queueName</td><td>Oozie队列（默认填写default）</td></tr><tr><td>oozie.usr.system.libpath</td><td>是否加载用户lib目录（true/false）</td></tr><tr><td>oozie.libpath</td><td>用户lib库所在的位置</td></tr><tr><td>oozie.wf.application.path</td><td>Oozie流程所在hdfs地址（workflow.xml所在的地址）</td></tr><tr><td>user.name</td><td>当前用户</td></tr><tr><td>oozie.coord.application.path</td><td>Coordinator.xml地址（没有可以不写）</td></tr><tr><td>oozie.bundle.application.path</td><td>Bundle.xml地址（没有可以不写）</td></tr></tbody></table><h3 id="workflow-xml"><a href="#workflow-xml" class="headerlink" title="workflow.xml"></a>workflow.xml</h3><p><img src="images/16120697594642.jpg" alt=""></p><p>包含<strong>控制流节点</strong>(control flow nodes)和<strong>动作节点</strong>(action nodes)</p><ul><li>[控制流节点]：主要包括start、end、fork、join等，其中fork、join成对出现，在fork展开。分支，最后在join结点汇聚<pre><code>* start* end</code></pre></li><li>[动作节点]：包括Hadoop任务、SSH、HTTP、EMAIL、OOZIE子任务<pre><code>* ok    --&gt; end* error --&gt; kill* 定义具体需要执行的job任务* MapReduce、shell、hive</code></pre></li></ul><p>actions 在远程系统（如Hadoop、Pig）中启动工作。在action完成时，远程系统回调Oozie通知action完成，此时Oozie将继续在workflow 中进行下一步操作。</p><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;workflow-app xmlns=<span class="string">"uri:oozie:workflow:0.2"</span> <span class="built_in">name</span>=<span class="string">"no-op-wf"</span>&gt;</span><br><span class="line">    &lt;start <span class="keyword">to</span>=<span class="string">"end"</span>/&gt;</span><br><span class="line">    &lt;<span class="keyword">end</span> <span class="built_in">name</span>=<span class="string">"end"</span>/&gt;</span><br><span class="line">&lt;/workflow-app&gt;</span><br></pre></td></tr></table></figure><h3 id="coordinator-xml"><a href="#coordinator-xml" class="headerlink" title="coordinator.xml"></a>coordinator.xml</h3><p><img src="images/16120697726699.jpg" alt=""></p><p>workflow 作业是基于常规的时间间隔（time intervals）和数据可用性（data availability）运行的。</p><p>包括controls、datasets、input-events、output-events、action节点</p><ul><li>controls</li></ul><table><thead><tr><th>元素名称</th><th>含义说明</th></tr></thead><tbody><tr><td>timeout</td><td>超时时间，单位为分钟。当一个Coordinator Job启动的时候，会初始化多个Coordinator动作，timeout用来限制这个初始化过程。默认值为-1，表示永远不超时，如果为0 则总是超时。</td></tr><tr><td>concurrency</td><td>并发数，指多个Coordinator Job并发执行，默认值为1。</td></tr><tr><td>execution</td><td>配置多个Coordinator Job并发执行的策略：默认是FIFO。另外还有两种：LIFO（最新的先执行）、LAST_ONLY（只执行最新的Coordinator Job，其它的全部丢弃）。</td></tr><tr><td>throttle</td><td>一个Coordinator Job初始化时，允许Coordinator动作处于WAITING状态的最大数量。</td></tr></tbody></table><ul><li>datasets</li></ul><p>Coordinator Job中有一个Dataset的概念，它可以为实际计算提供计算的数据，主要是指HDFS上的数据目录或文件，能够配置数据集生成的频率（Frequency）、URI模板、时间等信息</p><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">datasets</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">include</span>&gt;</span>[SHARED_DATASETS]<span class="tag">&lt;/<span class="name">include</span>&gt;</span></span><br><span class="line">     ...</span><br><span class="line">     <span class="tag">&lt;<span class="name">dataset</span> <span class="attr">name</span>=<span class="string">"[NAME]"</span> <span class="attr">frequency</span>=<span class="string">"[FREQUENCY]"</span> <span class="attr">initial-instance</span>=<span class="string">"[DATETIME]"</span> <span class="attr">timezone</span>=<span class="string">"[TIMEZONE]"</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="name">uri-template</span>&gt;</span>[URI TEMPLATE]<span class="tag">&lt;/<span class="name">uri-template</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;/<span class="name">dataset</span>&gt;</span></span><br><span class="line">     ...</span><br><span class="line"><span class="tag">&lt;/<span class="name">datasets</span>&gt;</span></span><br></pre></td></tr></table></figure><ul><li>input-events和output-events元素</li></ul><p>一个Coordinator应用的输入事件指定了要执行一个Coordinator动作<strong>必须满足的输入条件</strong>，在Oozie当前版本，只支持使用dataset实例。</p><ul><li>action节点定义需要运行的workflow</li></ul><p>Coordinator 动作的状态变迁</p><table><thead><tr><th>转移前状态</th><th>转以后状态集合</th></tr></thead><tbody><tr><td>WAITING</td><td>READY 、 TIMEDOUT 、 KILLED</td></tr><tr><td>READY</td><td>SUBMITTED 、 KILLED</td></tr><tr><td>SUBMITTED</td><td>RUNNING 、 KILLED 、 FAILED</td></tr><tr><td>RUNNING</td><td>SUCCEEDED 、 KILLED 、 FAILED</td></tr></tbody></table><ul><li>EL变量</li></ul><table><thead><tr><th>常量表示形式</th><th>含义说明</th></tr></thead><tbody><tr><td>${coord:minutes(int n)}</td><td>返回日期时间：从一开始，周期执行n分钟</td></tr><tr><td>${coord:hours(int n)}</td><td>返回日期时间：从一开始，周期执行n * 60分钟</td></tr><tr><td>${coord:days(int n)}</td><td>返回日期时间：从一开始，周期执行n * 24 * 60分钟</td></tr><tr><td>${coord:current(int n)}</td><td>返回日期时间：从一个Coordinator动作（Action）创建时开始计算，第n个dataset实例执行时间</td></tr><tr><td>${coord:dataIn(String name)}</td><td>在输入事件（input-events）中，解析dataset实例包含的所有的URI</td></tr><tr><td>${coord:dataOut(String name)}</td><td>在输出事件（output-events）中，解析dataset实例包含的所有的URI</td></tr><tr><td>${coord:offset(int n, String timeUnit)}</td><td>表示时间偏移，如果一个Coordinator动作创建时间为T，n为正数表示向时刻T之后偏移，n为负数向向时刻T之前偏移，timeUnit表示时间单位（选项有MINUTE、HOUR、DAY、MONTH、YEAR）</td></tr><tr><td>${coord:nominalTime()}</td><td>nominal时间等于Coordinator Job启动时间，加上多个Coordinator Job的频率所得到的日期时间。例如：start=”2009-01-01T24:00Z”，end=”2009-12-31T24:00Z”，frequency=”${coord:days(1)}”，frequency=”${coord:days(1)}，则nominal时间为：2009-01-02T00:00Z、2009-01-03T00:00Z、2009-01-04T00:00Z、…、2010-01-01T00:00Z</td></tr><tr><td>${coord:actualTime()}</td><td>Coordinator动作的实际创建时间。例如：start=”2011-05-01T24:00Z”，end=”2011-12-31T24:00Z”，frequency=”${coord:days(1)}”，则实际时间为：2011-05-01，2011-05-02，2011-05-03，…，2011-12-31</td></tr><tr><td>${coord:user()}</td><td>启动当前Coordinator Job的用户名称</td></tr><tr><td>${coord:dateOffset(String baseDate, int instance, String timeUnit)}</td><td>计算新的日期时间的公式：newDate = baseDate + instance * timeUnit，如：baseDate=’2009-01-01T00:00Z’，instance=’2′，timeUnit=’MONTH’，则计算得到的新的日期时间为’2009-03-01T00:00Z’。</td></tr><tr><td>${coord:formatTime(String timeStamp, String format)}</td><td>格式化时间字符串，format指定模式</td></tr></tbody></table>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Oozie是一个管理 Apache Hadoop 作业的工作流调度系统。&lt;/p&gt;
+&lt;p&gt;Oozie的 workflow jobs 是由 actions 组成的 有向无环图(DAG)。&lt;/p&gt;
+&lt;p&gt;Oozie的 coordinator jobs 是由时间 (频率)和数据可用性触发的重复的 workflow jobs 。&lt;/p&gt;
+&lt;p&gt;Oozie与Hadoop生态圈的其他部分集成在一起，支持多种类型的Hadoop作业（如Java map-reduce、流式map-reduce、Pig、Hive、Sqoop和Distcp）以及特定于系统的工作（如Java程序和shell脚本），不同作业对应不同的workflow action。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="大数据" scheme="http://rivenzoo.github.io/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
+    
+    
+      <category term="oozie" scheme="http://rivenzoo.github.io/tags/oozie/"/>
+    
+  </entry>
   
   <entry>
     <title>Gin web框架</title>
@@ -595,33 +620,6 @@
       <category term="C/C++" scheme="http://rivenzoo.github.io/tags/C-C/"/>
     
       <category term="Makefile" scheme="http://rivenzoo.github.io/tags/Makefile/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>C语言INT_MIN定义的问题</title>
-    <link href="http://rivenzoo.github.io/2015/01/21/c-minint-define/"/>
-    <id>http://rivenzoo.github.io/2015/01/21/c-minint-define/</id>
-    <published>2015-01-20T16:33:54.000Z</published>
-    <updated>2016-07-18T12:47:53.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>关于c语言INT_MIN定义的问题</p><p>最近看到一段代码</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MAX 2147483647</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MIN (-INT_MAX - 1)</span></span><br></pre></td></tr></table></figure><p>INT_MIN的值应该为 -2147483648，为什么不直接定义呢？原因参考<a href="http://www.cnblogs.com/Jack47/archive/2013/01/06/TMin32-in-c.html" target="_blank" rel="noopener">Jack47的blog:C语言中TMin的写法</a>这篇文章。</p><p>个人理解为C语言在处理程序中常量时，符号-和后面的值是分开处理的，先处理字面值，然后将-作为一元运算符。处理字面值的时候会决定这个常量的类型，基本的规则是选能容纳字面值的最小类型。如32位系统，2147483648这个值决定为unsigned int，如果使用<code>#define INT_MIN (-2147483648)</code>这个定义，INT_MIN类型为unsigned int。</p><p>写了一段代码验证</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MAX 2147483647</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> INT_MIN (-INT_MAX - 1)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// TMIN is unsigned int</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> TMIN (-2147483648)        </span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (i &gt; TMIN) </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d &gt; tmin\n"</span>, i);</span><br><span class="line">    <span class="keyword">else</span>   </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">"%d &lt; tmin\n"</span>, i);</span><br><span class="line">    <span class="keyword">if</span> (i &gt; INT_MIN)</span><br><span class="line">       <span class="built_in">printf</span>(<span class="string">"%d &gt;INT_MIN\n"</span>, i);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"%d\n"</span>,<span class="keyword">sizeof</span>(TMIN));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>运行结果为</p><blockquote></blockquote><p>1 &lt; tmin<br>1 &gt;INT_MIN<br>4</p><p>补充：</p><p>CSAPP的补充材料<a href="http://csapp.cs.cmu.edu/public/waside/waside-tmin.pdf" target="_blank" rel="noopener">waside-tmin.pdf</a></p><p>上面的例子说明了不同格式字面值在C90和C99下面的类型确定的规则，C90 32位下类型为unsigned，就会产生上面程序的结果。</p><p>对于这种会产生不同行为的代码最好避免.</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;关于c语言INT_MIN定义的问题&lt;/p&gt;
-&lt;p&gt;最近看到一段代码&lt;/p&gt;
-&lt;figure class=&quot;highlight cpp&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;sp
-      
-    
-    </summary>
-    
-      <category term="编程语言" scheme="http://rivenzoo.github.io/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
-    
-    
-      <category term="C/C++" scheme="http://rivenzoo.github.io/tags/C-C/"/>
     
   </entry>
   
