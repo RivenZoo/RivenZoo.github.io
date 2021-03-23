@@ -72,6 +72,109 @@
     
     
     
+    <article id="post-go-rsa-notes" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2016/04/15/go-rsa-notes/"
+    >Go使用Rsa加解密</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2016/04/15/go-rsa-notes/" class="article-date">
+  <time datetime="2016-04-15T15:05:18.000Z" itemprop="datePublished">2016-04-15</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a> / <a class="article-category-link" href="/categories/编程语言/安全/">安全</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h3 id="一次使用rsa的经历"><a href="#一次使用rsa的经历" class="headerlink" title="一次使用rsa的经历"></a>一次使用rsa的经历</h3><p>   最近项目中要提供一个接口供客户端查询信息。逻辑简单主要考虑安全性问题，信息保密要求不高但是要保证是服务端返回的，也就是要防止数据被篡改和替换。</p>
+<p>   因为只有一个这样的接口，而且申请证书比较麻烦就不考虑https了。客户端的安全性不是很可靠，如果用AES这样的对称加密，密钥放客户端会有较大风险。考虑用rsa加密来达到目的。</p>
+<p>   初步想法是服务端保存rsa私钥，用来加密数据，客户端保存公钥，解密服务端返回的数据，这样客户端只能解服务端返回的数据，而且是密文传输。想法很简单，实现起来就遇到了问题。Go语言的rsa包提供的解密方法只能使用公钥加密。</p>
+<p>   函数原型<br>    <code>func EncryptOAEP(hash hash.Hash, random io.Reader, pub *PublicKey, msg []byte, label []byte) (out []byte, err error)</code></p>
+<p>   试验半天还是不知道如何使用私钥加密。Go论坛上有个使用私钥加密的讨论<a href="https://groups.google.com/d/msg/golang-nuts/SkOBSsqLsrE/5rLo02hutbwJ" target="_blank" rel="noopener">https://groups.google.com/d/msg/golang-nuts/SkOBSsqLsrE/5rLo02hutbwJ</a>，大概的意思是公钥大家都能拿到，用私钥加密的信息并没有起到保密的作用，一般私钥只用来签名。虽然理论上私钥加密是可以的，但在这里只好换一个思路。</p>
+<p>   在这个场景中，签名可以达到要求，用私钥对关键信息签名，客户端用公钥校验，可以保证接受正确的服务端信息，唯一不太好的是明文传输的，需要引入一个对称加密对消息加密。</p>
+<p>   要引入对称加密，可以由客户端随机生成key，用这个key对称加密带校验信息的数据，然后用公钥加密key，这样只有服务端能解出key。然后服务端把客户端带上来的校验信息和数据打包，使用这个key进行对称加密再返回，客户端用自己生成的key解密并校验数据。这样一个流程能保证接受正确的服务端信息，同时是密文传输。</p>
+<p>   公钥是放在客户端的，假如被其他人拿到，破解了查询协议，最多只能查到数据。要伪造数据去欺骗其他客户端，必须同时知道其他客户端生成的key和校验信息，才能用伪造的请求的结果去欺骗这个客户端。若是AES的key泄漏，不但能查到数据，还能构造其他客户端的查询结果。</p>
+<h3 id="rsa使用笔记"><a href="#rsa使用笔记" class="headerlink" title="rsa使用笔记"></a>rsa使用笔记</h3><p>   在跟客户端对接的过程中由于对rsa不是很熟悉，遇到了一些问题。</p>
+<ol>
+<li><p>padding模式<br>  rsa遵循公钥加密标准(Public Key Cryptography Standards, PKCS)，老的是1.x，一般用1.5，新的是2。对应的padding模式有三种：PKCS1V15对应v1.5，OAEP对应v2，Nopadding。Go的rsa库有前面两种，推荐使用OAEP。</p>
+</li>
+<li><p>hash算法<br>  Go的rsa库提供hash函数的参数，可以自己设置hash函数，推荐使用sha256。不同hash值的长度会影响OAEP模式下最大消息长度，下面会讲到。加解密的hash函数要设置成一样的，客户端使用的比较旧的openssl使用的sha1，跟我设置的不一样，因为这个调试了很久。对比了一下sha256和md5，md5要快一点。</p>
+</li>
+<li><p>消息长度<br>  每次加解密的消息长度有限制。对于v1.5，最大长度为<code>keyBytes-11</code>，<code>keyBytes</code>是私钥字节数，比如2048位的私钥就是256字节。对于v2，最大长度为<code>keyBytes-(hashSize*2+2)</code>，根据hash函数不同长度不同，比如sha1计算结果20字节，对于2048位的key最大长度<code>256-(20*2+2)</code>。<br>  如果原文超过了这个一般就分块进行加密。</p>
+</li>
+</ol>
+<h3 id="rsa简介"><a href="#rsa简介" class="headerlink" title="rsa简介"></a>rsa简介</h3><ol>
+<li><p>选择质数<code>p</code>和<code>q</code>，计算<code>n=p*q</code>，欧拉函数<code>φ(n)=(p-1)*(q-1)</code></p>
+</li>
+<li><p>随机选择一个整数<code>e</code>，条件是<code>1&lt; e &lt; φ(n)</code>，且<code>e</code>与<code>φ(n)</code>互质，计算模反元素<code>d</code>，即<code>(e*d)mod(φ(n))=1</code></p>
+</li>
+<li><p>经过上面两步得到<code>p、q、n、e、d</code>五个数，把<code>n、e</code>作为公钥，<code>n、d</code>作为私钥进行加解密。</p>
+<ul>
+<li>加密：消息<code>m</code>，<code>m&lt;n</code>，计算<code>(pow(m,e))mod(n)=c</code>，<code>c</code>就是<code>m</code>的密文</li>
+<li>解密：密文<code>c</code>，计算<code>(pow(c,d)mod(n))=m</code></li>
+<li>对于<code>m&gt;=n</code>，可以分块加密或者使用对称加密<code>m</code>然后公钥加密对称加密密钥</li>
+</ul>
+<p>算法的安全性保证在于很难从<code>n</code>和<code>e</code>推断出<code>d</code>，计算<code>d</code>需要知道<code>φ(n)</code>，而当<code>n</code>值很大的时候，直接计算<code>φ(n)</code>很困难，分解<code>n</code>得到<code>p、q</code>也很困难。</p>
+<p>rsa原理的介绍推荐阮一峰老师的<a href="http://www.ruanyifeng.com/blog/2013/07/rsa_algorithm_part_two.html" target="_blank" rel="noopener">文章</a>。</p>
+</li>
+</ol>
+<h3 id="Go语言rsa简单封装"><a href="#Go语言rsa简单封装" class="headerlink" title="Go语言rsa简单封装"></a>Go语言rsa简单封装</h3><p>   为了方便使用做了个简单封装，放在Github上。</p>
+<p>   安装方法<br>    <code>go get github.com/RivenZoo/goutil/dencrypt</code></p>
+
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Rsa/">Rsa</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-ubuntu-mount-ntfs" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -378,94 +481,13 @@
 
 </article>
     
-    <article id="post-makefile-source-dependency" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2015/03/07/makefile-source-dependency/"
-    >Makefile获取依赖的源文件</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2015/03/07/makefile-source-dependency/" class="article-date">
-  <time datetime="2015-03-07T15:52:46.000Z" itemprop="datePublished">2015-03-07</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>代码：</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">exclude=<span class="string">"_test"</span></span><br><span class="line"><span class="comment">#exclude="___"</span></span><br><span class="line">src=<span class="variable">$(<span class="built_in">wildcard</span> *[^<span class="variable">$(exclude)</span>].c ./subs/*.c)</span></span><br><span class="line"></span><br><span class="line">files=<span class="variable">$(<span class="built_in">notdir</span> <span class="variable">$(src)</span>)</span></span><br><span class="line"></span><br><span class="line">obj=<span class="variable">$(<span class="built_in">patsubst</span> %.c,%.o,<span class="variable">$(files)</span> )</span></span><br><span class="line"></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">        @echo <span class="variable">$(src)</span></span><br><span class="line">        @echo <span class="variable">$(files)</span></span><br><span class="line">        @echo <span class="variable">$(obj)</span></span><br><span class="line">        @echo <span class="string">"end"</span></span><br></pre></td></tr></table></figure>
-
-<p>wildcard通过通配符来匹配文件并将结果展开，第一个参数排除了_test.c的文件。<br>notdir去掉src中的目录，只保留文件名<br>patsubst进行替换，把.c换成.o<br>上面代码参考Makefile中的wildcard用法这篇blog，稍微修改了下。</p>
-<h5 id="UPDATE"><a href="#UPDATE" class="headerlink" title="UPDATE"></a>UPDATE</h5><p>上面的代码</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">exclude=<span class="string">"_test"</span></span><br><span class="line"><span class="comment">#exclude="___"</span></span><br><span class="line">src=<span class="variable">$(<span class="built_in">wildcard</span> *[^<span class="variable">$(exclude)</span>].c ./subs/*.c)</span></span><br></pre></td></tr></table></figure>
-
-<p>其实有点问题，*[^$<em>test].c这个正则只能过滤.c之前是’</em>‘,’t’,’e’,’s’这4个字符的文件名，达不到想要的目的。<br>需要修改一下，对src进行替换</p>
-<p><code>$(patsubst %_test.c,, $(src))</code></p>
-<p>这样就把文件列表中含_test.c的去掉了。修改后为</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">src :=<span class="variable">$(<span class="built_in">wildcard</span> *.c ./subs/*.c)</span></span><br><span class="line">src :=<span class="variable">$(<span class="built_in">patsubst</span> %_test.c,,<span class="variable">$(src)</span>)</span></span><br><span class="line"></span><br><span class="line">files :=<span class="variable">$(<span class="built_in">notdir</span> <span class="variable">$(src)</span>)</span></span><br><span class="line"></span><br><span class="line">obj :=<span class="variable">$(<span class="built_in">patsubst</span> %.c,%.o,<span class="variable">$(files)</span> )</span></span><br><span class="line"></span><br><span class="line"><span class="section">all:</span></span><br><span class="line">        @echo <span class="variable">$(src)</span></span><br><span class="line">        @echo <span class="variable">$(files)</span></span><br><span class="line">        @echo <span class="variable">$(obj)</span></span><br><span class="line">        @echo <span class="string">"end"</span></span><br></pre></td></tr></table></figure>
-
-
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Makefile/">Makefile</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
   </article>
   
 
   
   <nav class="page-nav">
     
-    <a class="extend prev" rel="prev" href="/page/3/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">下一页</a>
+    <a class="extend prev" rel="prev" href="/page/3/">上一页</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/5/">下一页</a>
   </nav>
   
 </section>

@@ -72,6 +72,91 @@
     
     
     
+    <article id="post-Golang源码学习之sort" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2021/03/23/Golang源码学习之sort/"
+    >Golang源码学习之sort</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2021/03/23/Golang源码学习之sort/" class="article-date">
+  <time datetime="2021-03-23T05:17:48.000Z" itemprop="datePublished">2021-03-23</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>本文主要介绍go语言sort包内部分排序函数的实现，学习如何在实际的工业代码中如何应用那些基础的排序算法。</p>
+<h1 id="Sort方法"><a href="#Sort方法" class="headerlink" title="Sort方法"></a>Sort方法</h1><p>sort包内的Sort方法位于源文件<code>sort/sort.go</code>，是一个通用的非稳定排序的方法。</p>
+<h2 id="API设计"><a href="#API设计" class="headerlink" title="API设计"></a>API设计</h2><p>函数签名</p>
+<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Sort</span><span class="params">(data Interface)</span></span></span><br></pre></td></tr></table></figure>
+
+<p>go由于没有泛型，要实现通用排序只能另辟蹊径。<br>sort使用接口类型<code>sort.Interface</code>作为方法参数，<code>sort.Interface</code>接口定义了交换和比较的方法，按照比较方法的结果进行排序。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">type<span class="built_in"> Interface interface </span>&#123;</span><br><span class="line">	Len() int</span><br><span class="line">	Less(i, j int) bool</span><br><span class="line">	Swap(i, j int)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Sort方法实现"><a href="#Sort方法实现" class="headerlink" title="Sort方法实现"></a>Sort方法实现</h2><p>一般不稳定排序我们会先考虑快排，不过需要解决以下两个问题：</p>
+<ul>
+<li>如何避免递归调用过深</li>
+<li>如何避免最差情况时间复杂度</li>
+</ul>
+<p>下面我们看一下go源码中使用了什么方法来解决这些问题，以及它使用了哪些优化手段。</p>
+      
+      <a class="article-more-link" href="/2021/03/23/Golang源码学习之sort/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-大数据工作流组件oozie简介" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -394,135 +479,13 @@
 
 </article>
     
-    <article id="post-zap源码阅读" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/04/10/zap源码阅读/"
-    >zap源码阅读</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/04/10/zap源码阅读/" class="article-date">
-  <time datetime="2020-04-10T14:19:01.000Z" itemprop="datePublished">2020-04-10</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>zap是Uber开源的golang日志库，以结构化日志、高性能、可扩展的特点受到许多开发者的欢迎。</p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><h3 id="创建logger"><a href="#创建logger" class="headerlink" title="创建logger"></a>创建logger</h3><p>zap对外提供了两个不同的日志对象，强类型的Logger和简化使用方式的SugaredLogger</p>
-<ul>
-<li><p>Logger创建</p>
-<ul>
-<li><p>低级API</p>
-<p>  <code>func New(core zapcore.Core, options ...Option) *Logger</code></p>
-</li>
-<li><p>通过配置创建<br>  使用了builder模式，通过Config对象的Build方法创建</p>
-<p>  <code>func (cfg Config) Build(opts ...Option) (*Logger, error)</code></p>
-<p>  配置对象可以使用预设的<code>NewDevelopmentConfig</code>或<code>NewProductionConfig</code>创建，也可以反序列化json或yaml来创建<br>  Option提供了动态修改Logger配置的能力，定义为接口，每个实现在闭包中修改Logger对象</p>
-  <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">type Option<span class="built_in"> interface </span>&#123;</span><br><span class="line">	apply(*Logger)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>构造带固定上下文的Logger</p>
-<p>  <code>func (log *Logger) With(fields ...Field) *Logger</code></p>
-</li>
-</ul>
-</li>
-<li><p>SugaredLogger</p>
-<ul>
-<li><p>封装了Logger，可以和Logger互相转换</p>
-<p>  <code>func (log *Logger) Sugar() *SugaredLogger</code><br>  <code>func (s *SugaredLogger) Desugar() *Logger</code></p>
-<p>  内部通过<code>sweetenFields</code>方法把<code>(string, interface{})</code>类型的kv参数转换为强类型的<code>Field</code></p>
-<p>  <code>func (s *SugaredLogger) sweetenFields(args []interface{}) []Field</code></p>
-</li>
-<li><p>通过<code>With</code>方法构造一个带固定上下文的SugaredLogger</p>
-<p>  <code>func (s *SugaredLogger) With(args ...interface{}) *SugaredLogger</code></p>
-</li>
-</ul>
-</li>
-</ul>
-<h3 id="打印日志"><a href="#打印日志" class="headerlink" title="打印日志"></a>打印日志</h3><ul>
-<li><p>Logger</p>
-<p>  msg传入简单字符串，其他日志信息通过<code>Field</code>包装起来<br>  <code>func (log *Logger) Info(msg string, fields ...Field)</code></p>
-  <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">logger.<span class="builtin-name">Info</span>(<span class="string">"msg"</span>, zap.String(<span class="string">"foo"</span>, <span class="string">"bar"</span>))</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-<ul>
-<li><p>SugaredLogger</p>
-<p>  格式化msg的方法<br>  <code>func (s *SugaredLogger) Infof(template string, args ...interface{})</code></p>
-  <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">sugar</span><span class="selector-class">.Infof</span>(<span class="string">"Failed to fetch URL: %s"</span>, url)</span><br></pre></td></tr></table></figure>
-
-<p>  带kv参数的方法<br>  <code>func (s *SugaredLogger) Infow(msg string, keysAndValues ...interface{})</code></p>
-  <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sugar.Infow(<span class="string">"Failed to fetch URL."</span>,</span><br><span class="line">	<span class="comment">// Structured context as loosely typed key-value pairs.</span></span><br><span class="line">	<span class="string">"url"</span>, url,</span><br><span class="line">	<span class="string">"attempt"</span>, <span class="number">3</span>,</span><br><span class="line">	<span class="string">"backoff"</span>, <span class="selector-tag">time</span><span class="selector-class">.Second</span>,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-
-</li>
-</ul>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><h3 id="分层"><a href="#分层" class="headerlink" title="分层"></a>分层</h3><p>zapcore 封装日志的Core接口和实现，以及level、entry、encoder、field等基础功能<br>zap 提供高层接口，包括sugarlogger、配置、输出接口<code>Sink</code>和实现、HTTP修改level接口等<br>其他包提供支持功能。buffer实现了一个默认size为<strong>1k</strong>的buffer池。zapgrpc封装了与grpclog兼容的日志。</p>
-      
-      <a class="article-more-link" href="/2020/04/10/zap源码阅读/">阅读更多...</a>
-      
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
   </article>
   
 
   
   <nav class="page-nav">
     
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
   </nav>
   
 </section>
