@@ -72,6 +72,79 @@
     
     
     
+    <article id="post-leveldb-source-1" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h2 itemprop="name">
+  <a class="article-title" href="/2015/03/08/leveldb-source-1/"
+    >Take a look at Level source code</a> 
+</h2>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2015/03/08/leveldb-source-1/" class="article-date">
+  <time datetime="2015-03-08T13:32:02.000Z" itemprop="datePublished">2015-03-08</time>
+</a>
+      
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/数据库/">数据库</a> / <a class="article-category-link" href="/categories/数据库/NoSQL/">NoSQL</a>
+  </div>
+
+      
+      
+      
+    </div>
+    
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <p>最近看了一点leveldb源码，了解一下实现机制。</p>
+<p>之前也看过leveldb相关介绍以及别人的分析blog，已经有了一定了解。leveldb如其名，按照层级来组织数据，数据从内存到磁盘一层一层迁移。在内存中是通过skiplist来管理数据，而磁盘上则是一种名为SSTable(Sorted Strings Table)的结构来存储数据的。</p>
+      
+      <a class="article-more-link" href="/2015/03/08/leveldb-source-1/">阅读更多...</a>
+      
+      
+      <!-- reward -->
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+    <footer class="article-footer">
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Leveldb/">Leveldb</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+
+  
+  
+  
+
+  
+
+</article>
+    
     <article id="post-makefile-source-dependency" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
@@ -392,102 +465,6 @@
 
 </article>
     
-    <article id="post-define-linux-signal" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2013/11/05/define-linux-signal/"
-    >自定义linux信号</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2013/11/05/define-linux-signal/" class="article-date">
-  <time datetime="2013-11-05T11:55:55.000Z" itemprop="datePublished">2013-11-05</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>有时候我们需要在程序中利用信号来控制程序行为，linux为我们提供了2个已经定义的信号SIGUSR1和SIGUSR2，一般的程序利用这2个信号已经能满足需要，不过我最近需要一些其他信号来避免覆盖原来的信号处理函数。 </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MYSIG_MSG        (SIGUSR2 + 1)</span></span><br><span class="line"><span class="comment">// 定义信号然后注册处理函数</span></span><br></pre></td></tr></table></figure>
-
-
-<p>然后到系统里查了一下，MYSIG_MSG其实将其他的信号给覆盖了<br><code>$kill -l</code></p>
-<blockquote>
-<p>10) SIGUSR1    11) SIGSEGV    12) SIGUSR2 13) SIGPIPE    14) SIGALRM </p>
-</blockquote>
-<p>虽然SIGPIPE和SIGALRM在这个程序中没有用到，但是这并不是我想要的效果。<br>我发现在后面有 </p>
-<blockquote>
-<p>34) SIGRTMIN 35) SIGRTMIN+1    36) SIGRTMIN+2 </p>
-</blockquote>
-<p><code>man 7 signal</code>页面同样也说明可以用 SIGRTMIN作为自定义信号。然后程序里就多了下面的代码： </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MYSIG_MSG        (SIGRTMIN+ 1)</span></span><br></pre></td></tr></table></figure>
-
-<p>结果出错了，但是并不是这个定义方式的问题。在我程序中有下面的代码： </p>
-<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">switch(signo)&#123;</span><br><span class="line">    <span class="keyword">case</span> MYSIG_MSG:</span><br><span class="line">    break;</span><br><span class="line">&#125;</span><br><span class="line">```  </span><br><span class="line">编译时才发现原来SIGRTMIN并不是一个常量，看了头文件里才知道：</span><br></pre></td></tr></table></figure>
-
-<p>// centos5.9 /usr/include/bits/signum.h<br>#define SIGRTMIN        (__libc_current_sigrtmin ())</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">原来是函数调用，运行时确定的。 </span><br><span class="line">要用这个SIGRTMIN宏是不行，只能自己定义了：</span><br></pre></td></tr></table></figure>
-
-<p>#define MYSIGRTMIN    34<br>#define MYSIG_MSG     (MYSIGRTMIN + 1)</p>
-<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">在找到系统定义的SIGRTMIN值之前，根据man <span class="number">7</span> signal里面的说明：</span><br><span class="line">&gt; Linux supports <span class="number">32</span> real-<span class="built_in">time</span> signals, numbered <span class="built_in">from</span> <span class="number">32</span> (SIGRTMIN) <span class="built_in">to</span> <span class="number">63</span> (SIGRTMAX). </span><br><span class="line">我把自定义的信号值定义成了<span class="number">32</span>，但是一直注册不了这个信号，后来赫然发现在 `man <span class="number">7</span> signal`下面有一行说明， </span><br><span class="line">&gt; However, <span class="keyword">the</span> glibc POSIX threads implementation internally uses <span class="literal">two</span> (<span class="keyword">for</span> NPTL) <span class="keyword">or</span> <span class="literal">three</span>  (<span class="keyword">for</span>  LinuxThreads)  real-<span class="built_in">time</span> signals  (see  pthreads(<span class="number">7</span>)), <span class="keyword">and</span> adjusts <span class="keyword">the</span> <span class="built_in">value</span> <span class="keyword">of</span> SIGRTMIN suitably (<span class="built_in">to</span> <span class="number">34</span> <span class="keyword">or</span> <span class="number">35</span>) </span><br><span class="line"></span><br><span class="line">这个说明在ubuntu12<span class="number">.04</span>里面看见的，估计centos也有类似的情况。同时头文件下面也有：</span><br></pre></td></tr></table></figure>
-
-<p>/* These are the hard limits of the kernel.  These values should not be<br>used directly at user level.  */<br>#define __SIGRTMIN  32<br>#define __SIGRTMAX  (_NSIG - 1)</p>
-<pre><code>改成34之后就没有问题了。不过这个方法不太可靠，程序不应该直接用常量标识信号. 
-
-</code></pre>
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/C-C/">C/C++</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Linux/">Linux</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
   </article>
   
 
@@ -505,7 +482,7 @@
     <ul class="list-inline">
       <li>
         &copy;
-        2015-2021
+        2015-2024
         RivenZoo
       </li>
       <li>

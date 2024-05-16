@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
   <title>
-     Riven的博客
+    Golang源码学习之heap |  Riven的博客
   </title>
   <meta name="generator" content="hexo-theme-yilia-plus">
   
@@ -32,57 +32,17 @@
 <body>
   <div id="app">
     <main class="content on">
-      
-<section class="cover">
-    
-      
-      <a class="forkMe" href="https://github.com/rivenZoo"
-        target="_blank"><img width="149" height="149" src="/images/forkme.png"
-          class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
-    
-  <div class="cover-frame">
-    <div class="bg-box">
-      <img src="/images/cover8.jpg" alt="image frame" />
-    </div>
-    <div class="cover-inner text-center text-white">
-      <h1><a href="/">Riven的博客</a></h1>
-      <div id="subtitle-box">
-        
-        <span id="subtitle"></span>
-        
-      </div>
-      <div>
-        
-      </div>
-    </div>
-  </div>
-  <div class="cover-learn-more">
-    <a href="javascript:void(0)" class="anchor"><i class="ri-arrow-down-line"></i></a>
-  </div>
-</section>
-
-
-
-<script src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js"></script>
-
-<div id="main">
-  <section class="outer">
-  <article class="articles">
-    
-    
-    
-    
-    <article id="post-Golang源码学习之heap" class="article article-type-post" itemscope
+      <section class="outer">
+  <article id="post-Golang源码学习之heap" class="article article-type-post" itemscope
   itemprop="blogPost" data-scroll-reveal>
 
   <div class="article-inner">
     
     <header class="article-header">
        
-<h2 itemprop="name">
-  <a class="article-title" href="/2024/05/16/Golang源码学习之heap/"
-    >Golang源码学习之heap</a> 
-</h2>
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Golang源码学习之heap
+</h1>
  
 
     </header>
@@ -100,9 +60,36 @@
 
       
       
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">843字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">4分钟</span>
+        </span>
+    </span>
+</div>
+
       
     </div>
     
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
 
     
 
@@ -141,370 +128,160 @@
       
       <!-- reward -->
       
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-Golang源码学习之sort" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2021/03/23/Golang源码学习之sort/"
-    >Golang源码学习之sort</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2021/03/23/Golang源码学习之sort/" class="article-date">
-  <time datetime="2021-03-23T05:17:48.000Z" itemprop="datePublished">2021-03-23</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>本文主要介绍go语言sort包内部分排序函数的实现，学习如何在实际的工业代码中如何应用那些基础的排序算法。</p>
-<h1 id="Sort方法"><a href="#Sort方法" class="headerlink" title="Sort方法"></a>Sort方法</h1><p>sort包内的Sort方法位于源文件<code>sort/sort.go</code>，是一个通用的非稳定排序的方法。</p>
-<h2 id="API设计"><a href="#API设计" class="headerlink" title="API设计"></a>API设计</h2><p>函数签名</p>
-<figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Sort</span><span class="params">(data Interface)</span></span></span><br></pre></td></tr></table></figure>
-
-<p>go由于没有泛型，要实现通用排序只能另辟蹊径。<br>sort使用接口类型<code>sort.Interface</code>作为方法参数，<code>sort.Interface</code>接口定义了交换和比较的方法，按照比较方法的结果进行排序。</p>
-<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">type<span class="built_in"> Interface interface </span>&#123;</span><br><span class="line">	Len() int</span><br><span class="line">	Less(i, j int) bool</span><br><span class="line">	Swap(i, j int)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Sort方法实现"><a href="#Sort方法实现" class="headerlink" title="Sort方法实现"></a>Sort方法实现</h2><p>一般不稳定排序我们会先考虑快排，不过需要解决以下两个问题：</p>
-<ul>
-<li>如何避免递归调用过深</li>
-<li>如何避免最差情况时间复杂度</li>
-</ul>
-<p>下面我们看一下go源码中使用了什么方法来解决这些问题，以及它使用了哪些优化手段。</p>
-      
-      <a class="article-more-link" href="/2021/03/23/Golang源码学习之sort/">阅读更多...</a>
-      
-      
-      <!-- reward -->
+      <div id="reward-btn">
+        打赏
+      </div>
       
     </div>
     
     
       <!-- copyright -->
       
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
     <footer class="article-footer">
       
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-大数据工作流组件oozie简介" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2021/01/31/大数据工作流组件oozie简介/"
-    >大数据工作流组件oozie简介</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2021/01/31/大数据工作流组件oozie简介/" class="article-date">
-  <time datetime="2021-01-31T05:06:02.000Z" itemprop="datePublished">2021-01-31</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/大数据/">大数据</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>Oozie是一个管理 Apache Hadoop 作业的工作流调度系统。</p>
-<p>Oozie的 workflow jobs 是由 actions 组成的 有向无环图(DAG)。</p>
-<p>Oozie的 coordinator jobs 是由时间 (频率)和数据可用性触发的重复的 workflow jobs 。</p>
-<p>Oozie与Hadoop生态圈的其他部分集成在一起，支持多种类型的Hadoop作业（如Java map-reduce、流式map-reduce、Pig、Hive、Sqoop和Distcp）以及特定于系统的工作（如Java程序和shell脚本），不同作业对应不同的workflow action。</p>
-      
-      <a class="article-more-link" href="/2021/01/31/大数据工作流组件oozie简介/">阅读更多...</a>
-      
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/oozie/">oozie</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-Gin-web框架" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/05/06/Gin-web框架/"
-    >Gin web框架</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/05/06/Gin-web框架/" class="article-date">
-  <time datetime="2020-05-06T14:18:48.000Z" itemprop="datePublished">2020-05-06</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p>gin是一个基于Golang标准库<code>net/http</code>封装的HTTPweb框架。<br>它提供了方便的路由注册功能，支持捕获URL参数，提供了中间件机制来串连请求处理流程，提供了方便的数据获取和输出方法，所有这些功能提升了开发web服务的效率。<br>本文将从以下六个方面介绍gin的实现。</p>
-<h2 id="Engine"><a href="#Engine" class="headerlink" title="Engine"></a>Engine</h2><p>基于Golang标准库<code>net/http</code>的web服务都需要实现<code>http.Handler</code>接口，而<code>Engine</code>就是gin实现该接口的类，它同时也实现了注册路由、run服务等方法。<br><code>ServeHTTP</code>是HTTP请求的入口，而主要逻辑在<code>handleHTTPRequest</code>方法中实现。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 标准库HTTP接口</span></span><br><span class="line"><span class="keyword">type</span> Handler <span class="keyword">interface</span> &#123;</span><br><span class="line">	ServeHTTP(ResponseWriter, *Request)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 接口实现</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(engine *Engine)</span> <span class="title">ServeHTTP</span><span class="params">(w http.ResponseWriter, req *http.Request)</span></span></span><br><span class="line"><span class="function"><span class="title">func</span> <span class="params">(engine *Engine)</span> <span class="title">handleHTTPRequest</span><span class="params">(c *Context)</span></span></span><br></pre></td></tr></table></figure>
-
-<p>以下是几个比较重要的成员。<br>RouterGroup是路由注册的类，收集路由信息和对应的HandlerChain，实际注册还是调用的<code>Engine.addRoute</code>方法。<br><code>trees</code>是底层组织路由的结构。<br><code>pool</code>是分配<code>gin.Context</code>的池，优化内存分配。<br>Render用于数据渲染。</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Engine <span class="keyword">struct</span> &#123;</span><br><span class="line">	RouterGroup <span class="comment">// 路由，engine作为根路由</span></span><br><span class="line"></span><br><span class="line">	pool        sync.Pool <span class="comment">// context池</span></span><br><span class="line">	trees       methodTrees <span class="comment">// 路由</span></span><br><span class="line"></span><br><span class="line">	HTMLRender       render.HTMLRender <span class="comment">// 渲染数据</span></span><br><span class="line">	FuncMap          template.FuncMap  <span class="comment">// 渲染数据</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h2><p>gin定义了两个接口来处理路由信息<br><code>IRoutes</code>包含设置中间件、设置HTTP处理函数以及静态文件等方法，应用程序通过它来注册应用的路由处理逻辑。<br><code>IRouter</code>继承了<code>IRoutes</code>，另外添加了一个<code>Group</code>方法来按URL路径层次组织router。</p>
-<p>RouterGroup实现了<code>IRouter</code>接口，字段包含路径以及请求处理链，保存了Engine的指针，注册路由是通过调用<code>engine.addRoute</code>实现的。</p>
-<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> <span class="type">RouterGroup</span> struct &#123;</span><br><span class="line">	<span class="type">Handlers</span> <span class="type">HandlersChain</span> // 处理链</span><br><span class="line">	basePath string</span><br><span class="line">	engine   *<span class="type">Engine</span></span><br><span class="line">	root     bool // 如果是根，那么返回的<span class="type">IRoutes</span>接口对象为engine；否则返回自身</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>addRoute方法根据不同HTTP method获取路由的根节点，然后按路径加入到基数树中。</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">func</span> (<span class="selector-tag">engine</span> *<span class="selector-tag">Engine</span>) <span class="selector-tag">addRoute</span>(<span class="selector-tag">method</span>, <span class="selector-tag">path</span> <span class="selector-tag">string</span>, <span class="selector-tag">handlers</span> <span class="selector-tag">HandlersChain</span>) &#123;</span><br><span class="line">	<span class="attribute">root </span>:= engine.trees.<span class="built_in">get</span>(method)</span><br><span class="line">	if root == nil &#123;</span><br><span class="line">		root = <span class="built_in">new</span>(node)</span><br><span class="line">		root.fullPath = <span class="string">"/"</span></span><br><span class="line">		engine.trees = <span class="built_in">append</span>(engine.trees, methodTree&#123;method: method, root: root&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="selector-tag">root</span><span class="selector-class">.addRoute</span>(<span class="selector-tag">path</span>, <span class="selector-tag">handlers</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-      
-      <a class="article-more-link" href="/2020/05/06/Gin-web框架/">阅读更多...</a>
-      
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-    <article id="post-Golang-failpoint工具" class="article article-type-post" itemscope
-  itemprop="blogPost" data-scroll-reveal>
-
-  <div class="article-inner">
-    
-    <header class="article-header">
-       
-<h2 itemprop="name">
-  <a class="article-title" href="/2020/04/25/Golang-failpoint工具/"
-    >Golang failpoint工具</a> 
-</h2>
- 
-
-    </header>
-    
-
-    
-    <div class="article-meta">
-      <a href="/2020/04/25/Golang-failpoint工具/" class="article-date">
-  <time datetime="2020-04-25T06:34:46.000Z" itemprop="datePublished">2020-04-25</time>
-</a>
-      
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-      
-      
-      
-    </div>
-    
-
-    
-
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-      
-
-      
-      <p><a href="https://github.com/pingcap/failpoint" target="_blank" rel="noopener">failpoint</a>是用于测试时注入错误的工具。<br>来源是BSD系统的failpoint功能，已有的go语言实现有etcd的gofail。</p>
-<p>它与gofail的区别是用标记函数代替了注释，标记函数的好处在于IDE可以识别并且编译时可以进行语法检查。</p>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>注入错误</p>
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/pingcap/failpoint"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    failpoint.Inject(<span class="string">"testPanic"</span>, <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">"failpoint triggerd"</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<p>打开错误<code>failpoint-ctl enable</code><br>关闭<code>failpoint-ctl disable</code></p>
-<h3 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h3><p>enable和disable命令对应code目录下面的两个功能模块</p>
-<ul>
-<li>rewriter</li>
-<li>restorer</li>
-</ul>
-      
-      <a class="article-more-link" href="/2020/04/25/Golang-failpoint工具/">阅读更多...</a>
-      
-      
-      <!-- reward -->
-      
-    </div>
-    
-    
-      <!-- copyright -->
-      
-    <footer class="article-footer">
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
-
-
-    </footer>
-
-  </div>
-
-  
-
-  
-  
-  
-
-  
-
-</article>
-    
-  </article>
-  
-
-  
-  <nav class="page-nav">
-    
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/">下一页</a>
-  </nav>
-  
-</section>
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
 </div>
 
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://rivenzoo.github.io/2024/05/16/Golang源码学习之heap/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Go/">Go</a></li></ul>
+
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2021/03/23/Golang源码学习之sort/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Golang源码学习之sort</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        notify: 'false',
+        verify: 'false',
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
       <footer class="footer">
   <div class="outer">
     <ul class="list-inline">
@@ -654,6 +431,22 @@
 </script>
 
 
+
+<script src="/js/tocbot.min.js"></script>
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
 
 
 
